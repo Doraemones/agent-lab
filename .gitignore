@@ -1,0 +1,24 @@
+# ==== 密钥：绝不提交（.env.example 模板会正常提交）====
+.env
+.env.local
+.env.*.local
+
+# ==== Python ====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# ==== 数据产物 ====
+jobs.csv
+*.log
+
+# ==== Claude Code 本地设置（个人机器相关，不入库）====
+.claude/settings.local.json
+
+# ==== OS / IDE ====
+.DS_Store
+Thumbs.db
+.idea/

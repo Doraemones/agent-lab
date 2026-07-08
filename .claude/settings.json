@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(artifact-design)",
+      "Skill(artifact-design:*)",
+      "PowerShell(New-Item -ItemType Directory -Force \"f:\\\\desktop\\\\Poem\\\\study_cards\")",
+      "PowerShell(Copy-Item \"C:\\\\Users\\\\Lenovo\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\f--desktop-Poem\\\\00623839-3147-46ed-9c19-8a82eb051c71\\\\scratchpad\\\\study_day1.html\" \"f:\\\\desktop\\\\Poem\\\\study_cards\\\\study_day1.html\" -Force)",
+      "PowerShell(Get-Content \"f:\\\\desktop\\\\Poem\\\\.env\" | ForEach-Object { \\($_ -split '='\\)[0] })"
+    ]
+  }
+}

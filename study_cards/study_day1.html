@@ -1,0 +1,341 @@
+<title>Day 1 过关标准 · 标准答案</title>
+<style>
+  :root{
+    --paper:#F7F8FA;
+    --card:#FFFFFF;
+    --ink:#1E2330;
+    --muted:#5B647A;
+    --faint:#8A93A6;
+    --line:#E6E9F1;
+    --accent:#33406B;
+    --accent-soft:#EEF1F9;
+
+    /* 高光色 —— 颜色是有含义的，不是装饰 */
+    --m-amber:#FFE08A;   /* 记忆卡 */
+    --m-blue:#A9D6FF;    /* user / role卡 */
+    --m-green:#B2EEC6;   /* assistant */
+    --m-purple:#DBC8FF;  /* system / 参数卡 */
+    --m-orange:#FFC49B;  /* tool */
+    --m-pink:#FFC2DB;
+    --m-cold:#A6D2FF;    /* temperature=0，冷 */
+    --m-hot:#FFB086;     /* temperature=1.5，热 */
+
+    --chip-system:#7C5CE0; --chip-system-bg:#EFE9FF;
+    --chip-user:#2A7FD4;   --chip-user-bg:#E3F1FF;
+    --chip-assistant:#1E9E6A; --chip-assistant-bg:#DCF6E9;
+    --chip-tool:#D2792A;   --chip-tool-bg:#FCEBD8;
+
+    --stamp:#1E9E6A;
+    --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    --sans:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#131519; --card:#1C1F27; --ink:#E8EAF1; --muted:#9AA3B4;
+      --faint:#6E7688; --line:#2A2E39; --accent:#AEB9E6; --accent-soft:#242938;
+      --m-amber:rgba(255,206,84,.30); --m-blue:rgba(96,175,255,.30);
+      --m-green:rgba(70,214,150,.30); --m-purple:rgba(168,128,255,.32);
+      --m-orange:rgba(255,150,80,.30); --m-pink:rgba(255,120,180,.30);
+      --m-cold:rgba(96,175,255,.32); --m-hot:rgba(255,140,80,.34);
+      --chip-system:#B79CFF; --chip-system-bg:#2C2544;
+      --chip-user:#79BAFF;   --chip-user-bg:#1E2E44;
+      --chip-assistant:#57D69A; --chip-assistant-bg:#173229;
+      --chip-tool:#F0A85A;   --chip-tool-bg:#33260F;
+      --stamp:#57D69A;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#131519; --card:#1C1F27; --ink:#E8EAF1; --muted:#9AA3B4;
+    --faint:#6E7688; --line:#2A2E39; --accent:#AEB9E6; --accent-soft:#242938;
+    --m-amber:rgba(255,206,84,.30); --m-blue:rgba(96,175,255,.30);
+    --m-green:rgba(70,214,150,.30); --m-purple:rgba(168,128,255,.32);
+    --m-orange:rgba(255,150,80,.30); --m-pink:rgba(255,120,180,.30);
+    --m-cold:rgba(96,175,255,.32); --m-hot:rgba(255,140,80,.34);
+    --chip-system:#B79CFF; --chip-system-bg:#2C2544;
+    --chip-user:#79BAFF;   --chip-user-bg:#1E2E44;
+    --chip-assistant:#57D69A; --chip-assistant-bg:#173229;
+    --chip-tool:#F0A85A;   --chip-tool-bg:#33260F;
+    --stamp:#57D69A;
+  }
+  :root[data-theme="light"]{
+    --paper:#F7F8FA; --card:#FFFFFF; --ink:#1E2330; --muted:#5B647A;
+    --faint:#8A93A6; --line:#E6E9F1; --accent:#33406B; --accent-soft:#EEF1F9;
+    --m-amber:#FFE08A; --m-blue:#A9D6FF; --m-green:#B2EEC6; --m-purple:#DBC8FF;
+    --m-orange:#FFC49B; --m-pink:#FFC2DB; --m-cold:#A6D2FF; --m-hot:#FFB086;
+    --chip-system:#7C5CE0; --chip-system-bg:#EFE9FF;
+    --chip-user:#2A7FD4;   --chip-user-bg:#E3F1FF;
+    --chip-assistant:#1E9E6A; --chip-assistant-bg:#DCF6E9;
+    --chip-tool:#D2792A;   --chip-tool-bg:#FCEBD8;
+    --stamp:#1E9E6A;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    font-family:var(--sans);
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    padding:clamp(20px,5vw,64px) clamp(16px,4vw,32px);
+    line-height:1.5;
+  }
+  .sheet{max-width:840px;margin:0 auto}
+
+  /* ---------- 头部 ---------- */
+  header{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    gap:20px;flex-wrap:wrap;
+    border-bottom:2px solid var(--line);
+    padding-bottom:26px;margin-bottom:38px;
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin:0 0 12px;
+  }
+  h1{
+    font-size:clamp(26px,4.4vw,38px);line-height:1.2;margin:0;
+    font-weight:800;letter-spacing:-.01em;text-wrap:balance;color:var(--ink);
+  }
+  h1 .sub{display:block;font-size:.52em;font-weight:600;color:var(--muted);margin-top:10px;letter-spacing:0}
+
+  .stamp{
+    flex:0 0 auto;transform:rotate(-7deg);
+    border:2.5px solid var(--stamp);border-radius:12px;
+    color:var(--stamp);padding:10px 16px 8px;text-align:center;
+    background:color-mix(in srgb,var(--stamp) 8%,transparent);
+  }
+  .stamp .tick{font-size:22px;line-height:1;font-weight:800}
+  .stamp .txt{font-size:15px;font-weight:800;letter-spacing:.14em;margin-top:4px}
+  .stamp .dt{font-size:10px;letter-spacing:.18em;margin-top:5px;font-family:var(--mono);opacity:.85}
+
+  /* ---------- 卡片 ---------- */
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:clamp(20px,3.5vw,32px);
+    margin-bottom:26px;
+    box-shadow:0 1px 2px rgba(20,25,45,.04),0 8px 24px -18px rgba(20,25,45,.28);
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .card:nth-child(1){animation-delay:.05s}
+  .card:nth-child(2){animation-delay:.14s}
+  .card:nth-child(3){animation-delay:.23s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .chead{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+  .num{
+    flex:0 0 auto;width:44px;height:44px;border-radius:11px;
+    display:grid;place-items:center;font-family:var(--mono);font-weight:700;
+    font-size:17px;color:#fff;
+  }
+  .num.amber{background:linear-gradient(135deg,#F5B93C,#E89A1F)}
+  .num.blue{background:linear-gradient(135deg,#4A9BEC,#2A7FD4)}
+  .num.purple{background:linear-gradient(135deg,#8B6BE8,#6B4CD6)}
+  .q{margin:2px 0 0}
+  .q .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block;margin-bottom:5px}
+  .q .t{font-size:clamp(17px,2.4vw,20px);font-weight:700;line-height:1.4;color:var(--ink)}
+
+  .ans{font-size:16.5px;line-height:1.82;color:var(--ink)}
+  .ans p{margin:0 0 14px}
+  .ans ul{margin:0 0 14px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .ans li{position:relative;padding-left:22px}
+  .ans li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55}
+
+  /* ---------- 高光 marker ---------- */
+  .hl{
+    background-image:linear-gradient(180deg,transparent 56%,var(--m) 56%,var(--m) 92%,transparent 92%);
+    background-repeat:no-repeat;background-size:100% 100%;
+    padding:.02em .14em;border-radius:.12em;font-weight:600;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  }
+  .hl.amber{--m:var(--m-amber)}
+  .hl.blue{--m:var(--m-blue)}
+  .hl.green{--m:var(--m-green)}
+  .hl.purple{--m:var(--m-purple)}
+  .hl.orange{--m:var(--m-orange)}
+  .hl.pink{--m:var(--m-pink)}
+  .hl.cold{--m:var(--m-cold)}
+  .hl.hot{--m:var(--m-hot)}
+
+  code,.mono{font-family:var(--mono);font-size:.88em}
+  .inline-code{background:var(--accent-soft);padding:.08em .38em;border-radius:6px;font-family:var(--mono);font-size:.85em;color:var(--accent);white-space:nowrap}
+
+  /* role 定义行 */
+  .roles{display:flex;flex-direction:column;gap:14px;margin:2px 0 4px}
+  .role{display:grid;grid-template-columns:112px 1fr;gap:14px;align-items:start}
+  .rchip{
+    font-family:var(--mono);font-size:13px;font-weight:700;text-align:center;
+    padding:7px 4px;border-radius:9px;letter-spacing:.02em;
+  }
+  .rchip.system{color:var(--chip-system);background:var(--chip-system-bg)}
+  .rchip.user{color:var(--chip-user);background:var(--chip-user-bg)}
+  .rchip.assistant{color:var(--chip-assistant);background:var(--chip-assistant-bg)}
+  .rchip.tool{color:var(--chip-tool);background:var(--chip-tool-bg)}
+  .rdesc{font-size:15.5px;line-height:1.7;padding-top:3px}
+
+  @media (max-width:520px){
+    .role{grid-template-columns:1fr;gap:6px}
+    .rchip{justify-self:start;padding:5px 12px}
+  }
+
+  /* 代码示意块 */
+  .codeblock{
+    margin:4px 0 16px;background:var(--accent-soft);border:1px solid var(--line);
+    border-radius:12px;overflow-x:auto;
+  }
+  .codeblock pre{
+    margin:0;padding:16px 18px;font-family:var(--mono);font-size:13.5px;
+    line-height:1.75;color:var(--ink);white-space:pre;
+  }
+  .codeblock .cm{color:var(--faint)}
+  .codeblock .rl{color:var(--chip-system)}
+
+  /* 口诀条 */
+  .keynote{
+    display:flex;gap:12px;align-items:baseline;
+    margin-top:6px;padding:13px 16px;border-radius:11px;
+    background:var(--accent-soft);border-left:4px solid var(--nc,var(--accent));
+    font-size:15px;line-height:1.65;
+  }
+  .keynote b{color:var(--nc,var(--accent));letter-spacing:.02em;flex:0 0 auto}
+  .card.c1 .keynote{--nc:#E89A1F}
+  .card.c2 .keynote{--nc:var(--chip-user)}
+  .card.c3 .keynote{--nc:#6B4CD6}
+
+  /* temperature 双栏 */
+  .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:4px 0 6px}
+  @media (max-width:520px){.tgrid{grid-template-columns:1fr}}
+  .tcard{border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+  .tcard .lab{font-family:var(--mono);font-weight:700;font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .tcard.cold .lab{color:#2A7FD4}
+  .tcard.hot .lab{color:#D2792A}
+  :root[data-theme="dark"] .tcard.cold .lab{color:#79BAFF}
+  :root[data-theme="dark"] .tcard.hot .lab{color:#F0A85A}
+  @media (prefers-color-scheme:dark){.tcard.cold .lab{color:#79BAFF}.tcard.hot .lab{color:#F0A85A}}
+  .tcard .lab .dot{width:10px;height:10px;border-radius:50%}
+  .tcard.cold .dot{background:#2A7FD4}.tcard.hot .dot{background:#D2792A}
+  .tcard p{margin:0;font-size:15px;line-height:1.7}
+
+  footer{
+    margin-top:34px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:13px;color:var(--faint);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;font-family:var(--mono);letter-spacing:.02em;
+  }
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+
+<div class="wrap">
+<div class="sheet">
+
+  <header>
+    <div>
+      <p class="eyebrow">Agent 开发手册 · Day 1 · 周一</p>
+      <h1>多轮对话与消息结构
+        <span class="sub">三条过关标准 · 标准答案（高光划重点）</span>
+      </h1>
+    </div>
+    <div class="stamp" aria-label="已过关">
+      <div class="tick">✓</div>
+      <div class="txt">已过关</div>
+      <div class="dt">2026·07·06</div>
+    </div>
+  </header>
+
+  <!-- 卡片 1 -->
+  <section class="card c1">
+    <div class="chead">
+      <div class="num amber">01</div>
+      <div class="q">
+        <span class="k">过关标准</span>
+        <span class="t">聊 10 轮不丢上下文——第 10 轮问"我第一句说了什么"为什么能答对？</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>大模型本身是 <span class="hl amber">无状态、无记忆</span> 的：它不会自己记住上一轮说过什么，每次请求对它都像"第一次见面"。</li>
+        <li>真正的"记忆"在 <span class="hl amber">你的程序里那个 <code>messages</code> 列表</span>——每轮把 user、assistant 消息 <span class="inline-code">append</span> 进去，<span class="hl amber">从不丢弃</span>。</li>
+        <li>每次调 API 都把 <span class="hl amber">整段 messages 重新发过去</span>。所以第一句 user 消息到第 10 轮仍然在列表里、仍然被发送，模型自然"看得到"，就能答对。</li>
+        <li>只有 <span class="inline-code">/clear</span>（重置成只剩 system），或历史超出上下文窗口被 <span class="hl amber">截断</span> 时，才会真的"忘"。</li>
+      </ul>
+      <div class="codeblock"><pre>messages = [
+  {role:<span class="rl">"system"</span>,    ...},
+  {role:<span class="rl">"user"</span>,      <span class="hl amber">"北京天气?"</span>}   <span class="cm">← 第 1 句，一直都在</span>
+  {role:<span class="rl">"assistant"</span>, "晴，20°"},
+  ...  <span class="cm">（中间 8 轮）</span>
+  {role:<span class="rl">"user"</span>,      "我第一句说了啥?"}  <span class="cm">← 第 10 轮，待回答</span>
+]  <span class="cm"># 整个列表一起发 → 第 1 句还在里面</span></pre></div>
+      <div class="keynote"><b>口诀</b><span>不是模型有记忆，是<b>你每次把完整历史重新喂给它</b>。</span></div>
+    </div>
+  </section>
+
+  <!-- 卡片 2 -->
+  <section class="card c2">
+    <div class="chead">
+      <div class="num blue">02</div>
+      <div class="q">
+        <span class="k">过关标准</span>
+        <span class="t">口头解释 system / user / assistant / tool 四种 role 各自的作用</span>
+      </div>
+    </div>
+    <div class="ans">
+      <div class="roles">
+        <div class="role">
+          <div class="rchip system">system</div>
+          <div class="rdesc"><span class="hl purple">最高优先级的"人设 / 规则"</span>。设定助手的身份、语气、边界。一般放在<span class="hl purple">开头、只放一次</span>。</div>
+        </div>
+        <div class="role">
+          <div class="rchip user">user</div>
+          <div class="rdesc"><span class="hl blue">用户的输入</span>——提问、指令。你在代码里 append 的那句就是它。</div>
+        </div>
+        <div class="role">
+          <div class="rchip assistant">assistant</div>
+          <div class="rdesc"><span class="hl green">模型自己的回复</span>。多轮里<span class="hl green">必须把它 append 回历史</span>，否则下一轮模型"忘了自己刚说过啥"，对话会断。</div>
+        </div>
+        <div class="role">
+          <div class="rchip tool">tool</div>
+          <div class="rdesc"><span class="hl orange">工具调用的返回结果</span>（旧称 function）。流程：模型决定调某工具 → 你的代码执行 → 把结果以 <span class="inline-code">role=tool</span> 塞回 messages → 模型据此继续答。用于接实时数据、算数、外部 API。</div>
+        </div>
+      </div>
+      <div class="keynote"><b>口诀</b><span>system 定规矩、user 提问、assistant 作答、tool 送外部结果——<b>四色四职，交替成对话</b>。</span></div>
+    </div>
+  </section>
+
+  <!-- 卡片 3 -->
+  <section class="card c3">
+    <div class="chead">
+      <div class="num purple">03</div>
+      <div class="q">
+        <span class="k">过关标准</span>
+        <span class="t">temperature、max_tokens 是什么？temperature=0 与 1.5 各适合什么场景？</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><span class="inline-code">temperature</span> 采样温度，控制输出的 <span class="hl purple">随机性 / 发散度</span>，常见范围 0~2。低=确定、保守、可复现；高=随机、有创意，也更容易跑偏。</li>
+        <li><span class="inline-code">max_tokens</span> 单次回复的 <span class="hl purple">输出长度上限</span>（按 token 算，不含输入）。到达上限会被 <span class="hl pink">截断</span>——不是"回答完了"，是"写不下了"。</li>
+      </ul>
+      <div class="tgrid">
+        <div class="tcard cold">
+          <div class="lab"><span class="dot"></span>temperature = 0　冷静</div>
+          <p>要 <span class="hl cold">稳定、可复现、事实准</span> 的活：代码生成、数据抽取、分类、数学、每次答案都要一致的场景。</p>
+        </div>
+        <div class="tcard hot">
+          <div class="lab"><span class="dot"></span>temperature = 1.5　发散</div>
+          <p>要 <span class="hl hot">多样、有创意</span> 的活：头脑风暴、写故事 / 取名、要多个不同角度的方案。（太高会语无伦次）</p>
+        </div>
+      </div>
+      <div class="keynote"><b>口诀</b><span>temperature 管"多敢跳"，max_tokens 管"能写多长"——<b>要准调 0，要野调高</b>。</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>llm-universe C2 · 01_chat.py</span>
+    <span>Day 1 · PASS ✓</span>
+  </footer>
+
+</div>
+</div>
