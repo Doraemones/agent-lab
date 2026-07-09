@@ -186,7 +186,9 @@ messages = [
 
 print(f"User: {messages[-1]['content']}")
 
-while True:
+max_turns = 10
+
+for _turn in range(max_turns):
     message = send_messages(messages)
 
     # 先保存模型包含 tool_calls 的完整消息
@@ -210,3 +212,5 @@ while True:
             "tool_call_id": tool.id,
             "content": result,
         })
+else:
+    print("[达到最大轮数,强制停止]")
