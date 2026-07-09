@@ -105,6 +105,7 @@ while True:
             print(piece, end="", flush=True)
             content += piece
     print()                             # 收完补个换行
+    
 
     # --- 打印本轮 token 消耗 ---
     if usage:
