@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 3 结构化输出 · 学习小卡片</title>
+<style>
+  :root{
+    --paper:#F7F8FA;
+    --card:#FFFFFF;
+    --ink:#1E2330;
+    --muted:#5B647A;
+    --faint:#8A93A6;
+    --line:#E6E9F1;
+    --accent:#33406B;
+    --accent-soft:#EEF1F9;
+
+    --m-amber:#FFE08A;
+    --m-blue:#A9D6FF;
+    --m-green:#B2EEC6;
+    --m-purple:#DBC8FF;
+    --m-orange:#FFC49B;
+    --m-pink:#FFC2DB;
+
+    --chip-system:#7C5CE0; --chip-system-bg:#EFE9FF;
+    --chip-user:#2A7FD4; --chip-user-bg:#E3F1FF;
+    --chip-assistant:#1E9E6A; --chip-assistant-bg:#DCF6E9;
+    --chip-tool:#D2792A; --chip-tool-bg:#FCEBD8;
+
+    --stamp:#1E9E6A;
+    --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    --sans:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#131519; --card:#1C1F27; --ink:#E8EAF1; --muted:#9AA3B4;
+      --faint:#6E7688; --line:#2A2E39; --accent:#AEB9E6; --accent-soft:#242938;
+      --m-amber:rgba(255,206,84,.30); --m-blue:rgba(96,175,255,.30);
+      --m-green:rgba(70,214,150,.30); --m-purple:rgba(168,128,255,.32);
+      --m-orange:rgba(255,150,80,.30); --m-pink:rgba(255,120,180,.30);
+      --chip-system:#B79CFF; --chip-system-bg:#2C2544;
+      --chip-user:#79BAFF; --chip-user-bg:#1E2E44;
+      --chip-assistant:#57D69A; --chip-assistant-bg:#173229;
+      --chip-tool:#F0A85A; --chip-tool-bg:#33260F;
+      --stamp:#57D69A;
+    }
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    font-family:var(--sans);
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    padding:clamp(20px,5vw,64px) clamp(16px,4vw,32px);
+    line-height:1.5;
+  }
+  .sheet{max-width:880px;margin:0 auto}
+
+  header{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    gap:20px;flex-wrap:wrap;
+    border-bottom:2px solid var(--line);
+    padding-bottom:26px;margin-bottom:38px;
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin:0 0 12px;
+  }
+  h1{
+    font-size:clamp(26px,4.4vw,38px);line-height:1.2;margin:0;
+    font-weight:800;letter-spacing:0;text-wrap:balance;color:var(--ink);
+  }
+  h1 .sub{display:block;font-size:.52em;font-weight:600;color:var(--muted);margin-top:10px;letter-spacing:0}
+
+  .stamp{
+    flex:0 0 auto;transform:rotate(-7deg);
+    border:2.5px solid var(--stamp);border-radius:12px;
+    color:var(--stamp);padding:10px 16px 8px;text-align:center;
+    background:color-mix(in srgb,var(--stamp) 8%,transparent);
+  }
+  .stamp .tick{font-size:22px;line-height:1;font-weight:800}
+  .stamp .txt{font-size:15px;font-weight:800;letter-spacing:.14em;margin-top:4px}
+  .stamp .dt{font-size:10px;letter-spacing:.18em;margin-top:5px;font-family:var(--mono);opacity:.85}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:clamp(20px,3.5vw,32px);
+    margin-bottom:26px;
+    box-shadow:0 1px 2px rgba(20,25,45,.04),0 8px 24px -18px rgba(20,25,45,.28);
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .card:nth-of-type(1){animation-delay:.05s}
+  .card:nth-of-type(2){animation-delay:.14s}
+  .card:nth-of-type(3){animation-delay:.23s}
+  .card:nth-of-type(4){animation-delay:.32s}
+  .card:nth-of-type(5){animation-delay:.41s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .chead{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+  .num{
+    flex:0 0 auto;width:44px;height:44px;border-radius:11px;
+    display:grid;place-items:center;font-family:var(--mono);font-weight:700;
+    font-size:17px;color:#fff;
+  }
+  .num.blue{background:linear-gradient(135deg,#4A9BEC,#2A7FD4)}
+  .num.purple{background:linear-gradient(135deg,#8B6BE8,#6B4CD6)}
+  .num.amber{background:linear-gradient(135deg,#F5B93C,#E89A1F)}
+  .num.green{background:linear-gradient(135deg,#27BF80,#168A5C)}
+  .num.orange{background:linear-gradient(135deg,#F4A35D,#D2792A)}
+  .q{margin:2px 0 0}
+  .q .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block;margin-bottom:5px}
+  .q .t{font-size:clamp(17px,2.4vw,20px);font-weight:700;line-height:1.4;color:var(--ink)}
+
+  .ans{font-size:16.5px;line-height:1.82;color:var(--ink)}
+  .ans p{margin:0 0 14px}
+  .ans ul{margin:0 0 14px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .ans li{position:relative;padding-left:22px}
+  .ans li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55}
+
+  .hl{
+    background-image:linear-gradient(180deg,transparent 56%,var(--m) 56%,var(--m) 92%,transparent 92%);
+    background-repeat:no-repeat;background-size:100% 100%;
+    padding:.02em .14em;border-radius:.12em;font-weight:600;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  }
+  .hl.amber{--m:var(--m-amber)}
+  .hl.blue{--m:var(--m-blue)}
+  .hl.green{--m:var(--m-green)}
+  .hl.purple{--m:var(--m-purple)}
+  .hl.orange{--m:var(--m-orange)}
+  .hl.pink{--m:var(--m-pink)}
+
+  code,.mono{font-family:var(--mono);font-size:.88em}
+  .inline-code{
+    background:var(--accent-soft);padding:.08em .38em;border-radius:6px;
+    font-family:var(--mono);font-size:.85em;color:var(--accent);white-space:nowrap;
+  }
+
+  .roles{display:flex;flex-direction:column;gap:14px;margin:2px 0 4px}
+  .role{display:grid;grid-template-columns:136px 1fr;gap:14px;align-items:start}
+  .rchip{
+    font-family:var(--mono);font-size:13px;font-weight:700;text-align:center;
+    padding:7px 4px;border-radius:9px;letter-spacing:.02em;
+  }
+  .rchip.system{color:var(--chip-system);background:var(--chip-system-bg)}
+  .rchip.user{color:var(--chip-user);background:var(--chip-user-bg)}
+  .rchip.assistant{color:var(--chip-assistant);background:var(--chip-assistant-bg)}
+  .rchip.tool{color:var(--chip-tool);background:var(--chip-tool-bg)}
+  .rdesc{font-size:15.5px;line-height:1.7;padding-top:3px}
+  .rdesc .cost{display:block;margin-top:4px;font-size:13.5px;color:var(--muted)}
+
+  .codeblock{
+    margin:4px 0 16px;background:var(--accent-soft);border:1px solid var(--line);
+    border-radius:12px;overflow-x:auto;
+  }
+  .codeblock pre{
+    margin:0;padding:16px 18px;font-family:var(--mono);font-size:13.5px;
+    line-height:1.75;color:var(--ink);white-space:pre;
+  }
+  .codeblock .cm{color:var(--faint)}
+  .codeblock .kw{color:var(--chip-system)}
+  .codeblock .st{color:var(--chip-assistant)}
+  .codeblock .fn{color:var(--chip-user)}
+
+  .keynote{
+    display:flex;gap:12px;align-items:baseline;
+    margin-top:6px;padding:13px 16px;border-radius:11px;
+    background:var(--accent-soft);border-left:4px solid var(--nc,var(--accent));
+    font-size:15px;line-height:1.65;
+  }
+  .keynote b{color:var(--nc,var(--accent));letter-spacing:.02em;flex:0 0 auto}
+  .card.c1 .keynote{--nc:#2A7FD4}
+  .card.c2 .keynote{--nc:#6B4CD6}
+  .card.c3 .keynote{--nc:#E89A1F}
+  .card.c4 .keynote{--nc:#1E9E6A}
+  .card.c5 .keynote{--nc:#D2792A}
+
+  .pipeline{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:6px 0 18px;
+  }
+  .step{
+    min-height:72px;border:1px solid var(--line);border-radius:12px;
+    background:var(--accent-soft);padding:10px 10px 9px;
+  }
+  .step b{display:block;font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:5px}
+  .step span{display:block;font-size:13.5px;color:var(--muted);line-height:1.45}
+
+  footer{
+    margin-top:34px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:13px;color:var(--faint);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;font-family:var(--mono);letter-spacing:.02em;
+  }
+
+  @media (max-width:680px){
+    .pipeline{grid-template-columns:1fr}
+  }
+  @media (max-width:520px){
+    .role{grid-template-columns:1fr;gap:6px}
+    .rchip{justify-self:start;padding:5px 12px}
+    .keynote{align-items:flex-start;flex-direction:column;gap:4px}
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sheet">
+
+  <header>
+    <div>
+      <p class="eyebrow">Agent 开发手册 · Day 3 · 周三</p>
+      <h1>结构化输出：JD 抽取到 jobs.csv
+        <span class="sub">JSON mode + json.loads 校验 + 自动重试 · 踩坑小卡片</span>
+      </h1>
+    </div>
+    <div class="stamp" aria-label="已完成">
+      <div class="tick">✓</div>
+      <div class="txt">已完成</div>
+      <div class="dt">2026·07·08</div>
+    </div>
+  </header>
+
+  <section class="card c1">
+    <div class="chead">
+      <div class="num blue">01</div>
+      <div class="q">
+        <span class="k">环境变量</span>
+        <span class="t">.env 不是自动生效：先 load，再 getenv</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><span class="inline-code">load_dotenv()</span> 是把 <span class="inline-code">.env</span> 里的键值加载进环境变量；<span class="inline-code">find_dotenv()</span> 是帮你从当前目录往上找 <span class="inline-code">.env</span> 文件。</li>
+        <li><span class="hl blue">OpenAI 初始化前必须先加载 .env</span>，否则 <span class="inline-code">os.getenv("DEEPSEEK_API_KEY")</span> 读到的是 <span class="inline-code">None</span>。</li>
+        <li><span class="inline-code">api_key=load_dotenv</span> 传进去的是函数本身；真正要传的是 <span class="hl blue">os.getenv 读出来的字符串 key</span>。</li>
+      </ul>
+      <div class="codeblock"><pre><span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv, find_dotenv
+<span class="kw">import</span> os
+
+<span class="fn">load_dotenv</span>(<span class="fn">find_dotenv</span>())
+
+client = OpenAI(
+    api_key=os.getenv(<span class="st">"DEEPSEEK_API_KEY"</span>),
+    base_url=<span class="st">"https://api.deepseek.com"</span>,
+)</pre></div>
+      <div class="keynote"><b>口诀</b><span><b>load 负责加载，find 负责找文件，getenv 负责取值</b>。顺序错了，key 就是空。</span></div>
+    </div>
+  </section>
+
+  <section class="card c2">
+    <div class="chead">
+      <div class="num purple">02</div>
+      <div class="q">
+        <span class="k">JSON Mode</span>
+        <span class="t">response_format 是开关，prompt 是合同</span>
+      </div>
+    </div>
+    <div class="ans">
+      <div class="roles">
+        <div class="role">
+          <div class="rchip system">response_format</div>
+          <div class="rdesc">请求里加 <span class="inline-code">{"type":"json_object"}</span>，告诉 DeepSeek 这次要走 JSON 输出模式。<span class="cost">它管的是输出形态，不等于业务字段一定完整。</span></div>
+        </div>
+        <div class="role">
+          <div class="rchip user">prompt</div>
+          <div class="rdesc">提示词里必须出现 <span class="hl purple">JSON / json</span>，并给出字段说明和示例对象。<span class="cost">不给 schema，模型更容易乱填字段名或吐空白。</span></div>
+        </div>
+        <div class="role">
+          <div class="rchip assistant">temperature=0</div>
+          <div class="rdesc">抽取任务要稳定，设置 <span class="inline-code">temperature=0</span>。<span class="cost">这是信息抽取，不是写作文，稳定比发散重要。</span></div>
+        </div>
+      </div>
+      <div class="keynote"><b>口诀</b><span><b>response_format 开模式，prompt 定字段，示例锁格式</b>。三件事缺一件，都可能不稳。</span></div>
+    </div>
+  </section>
+
+  <section class="card c3">
+    <div class="chead">
+      <div class="num amber">03</div>
+      <div class="q">
+        <span class="k">校验与重试</span>
+        <span class="t">能 json.loads，才算这条 JD 合法</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>模型返回的是字符串，不能肉眼觉得像 JSON 就算过。必须用 <span class="inline-code">json.loads(raw)</span> 真的解析一次。</li>
+        <li>解析失败时最多重试 3 次；你这里更关键的一步是把<span class="hl amber">坏输出作为 assistant 消息塞回去</span>，再让模型修正。</li>
+        <li>因为 <span class="inline-code">temperature=0</span> 很稳定，原样重发常会得到同一个坏结果；带上错误上下文，重试才有意义。</li>
+      </ul>
+      <div class="codeblock"><pre><span class="kw">try</span>:
+    <span class="kw">return</span> json.loads(raw)
+<span class="kw">except</span> json.JSONDecodeError <span class="kw">as</span> e:
+    messages.append({<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: raw})
+    messages.append({
+        <span class="st">"role"</span>: <span class="st">"user"</span>,
+        <span class="st">"content"</span>: <span class="st">"上面的输出不是合法 JSON，请只返回合法 JSON 对象。"</span>,
+    })</pre></div>
+      <div class="keynote"><b>口诀</b><span>JSON mode 负责“尽量像 JSON”，<b>json.loads 负责判死刑</b>；失败重试要给模型看见自己错在哪。</span></div>
+    </div>
+  </section>
+
+  <section class="card c4">
+    <div class="chead">
+      <div class="num green">04</div>
+      <div class="q">
+        <span class="k">数据落盘</span>
+        <span class="t">内部英文 key，外部中文表头：FIELD_MAP 做边界</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>脚本内部用 <span class="inline-code">title / skills / salary / city / education</span>，代码更稳定；写 CSV 时再映射成 <span class="hl green">岗位名、技能要求、薪资、城市、学历要求</span>。</li>
+        <li><span class="inline-code">skills</span> 是数组，CSV 单元格只能放文本，所以落盘前拼成 <span class="inline-code">Python、MySQL、Redis</span> 这种字符串。</li>
+        <li>用 <span class="inline-code">utf-8-sig</span> 写文件，Excel 双击打开中文不乱码；文件不存在才写表头，追加时不重复。</li>
+      </ul>
+      <div class="codeblock"><pre>FIELD_MAP = {
+    <span class="st">"title"</span>: <span class="st">"岗位名"</span>,
+    <span class="st">"skills"</span>: <span class="st">"技能要求"</span>,
+    <span class="st">"salary"</span>: <span class="st">"薪资"</span>,
+    <span class="st">"city"</span>: <span class="st">"城市"</span>,
+    <span class="st">"education"</span>: <span class="st">"学历要求"</span>,
+}</pre></div>
+      <div class="keynote"><b>口诀</b><span><b>模型输出给程序用，CSV 输出给人看</b>。中间用 FIELD_MAP 做翻译层。</span></div>
+    </div>
+  </section>
+
+  <section class="card c5">
+    <div class="chead">
+      <div class="num orange">05</div>
+      <div class="q">
+        <span class="k">过关流程</span>
+        <span class="t">真实 JD 是多行文本，按空行提交更顺手</span>
+      </div>
+    </div>
+    <div class="ans">
+      <div class="pipeline">
+        <div class="step"><b>1. 粘贴 JD</b><span>多行复制，不用压成一行。</span></div>
+        <div class="step"><b>2. 空行提交</b><span>单独敲空行，表示这一条结束。</span></div>
+        <div class="step"><b>3. LLM 抽取</b><span>DeepSeek 返回 JSON 字符串。</span></div>
+        <div class="step"><b>4. loads 校验</b><span>失败最多纠错重试 3 次。</span></div>
+        <div class="step"><b>5. 追加 CSV</b><span>每成功一条立刻写入 jobs.csv。</span></div>
+      </div>
+      <ul>
+        <li>不用单个 <span class="inline-code">input()</span> 读 JD，因为招聘描述通常有岗位职责、任职要求、福利待遇等多段文本。</li>
+        <li>每条成功后马上 <span class="inline-code">save_to_csv([data])</span>，中途程序挂了，也不会丢掉前面已经抽取好的结果。</li>
+        <li>Day 3 的真正验收不是“跑一次没报错”，而是<span class="hl orange">从 BOSS / 牛客复制 20 条真实 JD，20/20 都能解析成合法 JSON 并落到 jobs.csv</span>。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>输入按“条”收，输出按“条”验，落盘按“条”存。<b>20 条真 JD 全绿才叫过关</b>。</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>llm-universe C2 · 02_extract.py（JSON mode）</span>
+    <span>Day 3 · PASS ✓</span>
+  </footer>
+
+</div>
+</div>
+</body>
+</html>

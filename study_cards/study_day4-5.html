@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 4–5 工具调用循环 · 学习小卡片</title>
+<style>
+  :root{
+    --paper:#F7F8FA;
+    --card:#FFFFFF;
+    --ink:#1E2330;
+    --muted:#5B647A;
+    --faint:#8A93A6;
+    --line:#E6E9F1;
+    --accent:#33406B;
+    --accent-soft:#EEF1F9;
+
+    --m-amber:#FFE08A;
+    --m-blue:#A9D6FF;
+    --m-green:#B2EEC6;
+    --m-purple:#DBC8FF;
+    --m-orange:#FFC49B;
+    --m-pink:#FFC2DB;
+
+    --chip-system:#7C5CE0; --chip-system-bg:#EFE9FF;
+    --chip-user:#2A7FD4; --chip-user-bg:#E3F1FF;
+    --chip-assistant:#1E9E6A; --chip-assistant-bg:#DCF6E9;
+    --chip-tool:#D2792A; --chip-tool-bg:#FCEBD8;
+
+    --stamp:#1E9E6A;
+    --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    --sans:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#131519; --card:#1C1F27; --ink:#E8EAF1; --muted:#9AA3B4;
+      --faint:#6E7688; --line:#2A2E39; --accent:#AEB9E6; --accent-soft:#242938;
+      --m-amber:rgba(255,206,84,.30); --m-blue:rgba(96,175,255,.30);
+      --m-green:rgba(70,214,150,.30); --m-purple:rgba(168,128,255,.32);
+      --m-orange:rgba(255,150,80,.30); --m-pink:rgba(255,120,180,.30);
+      --chip-system:#B79CFF; --chip-system-bg:#2C2544;
+      --chip-user:#79BAFF; --chip-user-bg:#1E2E44;
+      --chip-assistant:#57D69A; --chip-assistant-bg:#173229;
+      --chip-tool:#F0A85A; --chip-tool-bg:#33260F;
+      --stamp:#57D69A;
+    }
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    font-family:var(--sans);
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    padding:clamp(20px,5vw,64px) clamp(16px,4vw,32px);
+    line-height:1.5;
+  }
+  .sheet{max-width:880px;margin:0 auto}
+
+  header{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    gap:20px;flex-wrap:wrap;
+    border-bottom:2px solid var(--line);
+    padding-bottom:26px;margin-bottom:38px;
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin:0 0 12px;
+  }
+  h1{
+    font-size:clamp(26px,4.4vw,38px);line-height:1.2;margin:0;
+    font-weight:800;letter-spacing:0;text-wrap:balance;color:var(--ink);
+  }
+  h1 .sub{display:block;font-size:.52em;font-weight:600;color:var(--muted);margin-top:10px;letter-spacing:0}
+
+  .stamp{
+    flex:0 0 auto;transform:rotate(-7deg);
+    border:2.5px solid var(--stamp);border-radius:12px;
+    color:var(--stamp);padding:10px 16px 8px;text-align:center;
+    background:color-mix(in srgb,var(--stamp) 8%,transparent);
+  }
+  .stamp .tick{font-size:22px;line-height:1;font-weight:800}
+  .stamp .txt{font-size:15px;font-weight:800;letter-spacing:.14em;margin-top:4px}
+  .stamp .dt{font-size:10px;letter-spacing:.14em;margin-top:5px;font-family:var(--mono);opacity:.85}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:clamp(20px,3.5vw,32px);
+    margin-bottom:26px;
+    box-shadow:0 1px 2px rgba(20,25,45,.04),0 8px 24px -18px rgba(20,25,45,.28);
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .card:nth-of-type(1){animation-delay:.05s}
+  .card:nth-of-type(2){animation-delay:.13s}
+  .card:nth-of-type(3){animation-delay:.21s}
+  .card:nth-of-type(4){animation-delay:.29s}
+  .card:nth-of-type(5){animation-delay:.37s}
+  .card:nth-of-type(6){animation-delay:.45s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .chead{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+  .num{
+    flex:0 0 auto;width:44px;height:44px;border-radius:11px;
+    display:grid;place-items:center;font-family:var(--mono);font-weight:700;
+    font-size:17px;color:#fff;
+  }
+  .num.blue{background:linear-gradient(135deg,#4A9BEC,#2A7FD4)}
+  .num.purple{background:linear-gradient(135deg,#8B6BE8,#6B4CD6)}
+  .num.amber{background:linear-gradient(135deg,#F5B93C,#E89A1F)}
+  .num.green{background:linear-gradient(135deg,#27BF80,#168A5C)}
+  .num.orange{background:linear-gradient(135deg,#F4A35D,#D2792A)}
+  .num.pink{background:linear-gradient(135deg,#F06B9A,#D24A7C)}
+  .q{margin:2px 0 0}
+  .q .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block;margin-bottom:5px}
+  .q .t{font-size:clamp(17px,2.4vw,20px);font-weight:700;line-height:1.4;color:var(--ink)}
+
+  .ans{font-size:16.5px;line-height:1.82;color:var(--ink)}
+  .ans p{margin:0 0 14px}
+  .ans ul{margin:0 0 14px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .ans li{position:relative;padding-left:22px}
+  .ans li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55}
+
+  .hl{
+    background-image:linear-gradient(180deg,transparent 56%,var(--m) 56%,var(--m) 92%,transparent 92%);
+    background-repeat:no-repeat;background-size:100% 100%;
+    padding:.02em .14em;border-radius:.12em;font-weight:600;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  }
+  .hl.amber{--m:var(--m-amber)}
+  .hl.blue{--m:var(--m-blue)}
+  .hl.green{--m:var(--m-green)}
+  .hl.purple{--m:var(--m-purple)}
+  .hl.orange{--m:var(--m-orange)}
+  .hl.pink{--m:var(--m-pink)}
+
+  code,.mono{font-family:var(--mono);font-size:.88em}
+  .inline-code{
+    background:var(--accent-soft);padding:.08em .38em;border-radius:6px;
+    font-family:var(--mono);font-size:.85em;color:var(--accent);white-space:nowrap;
+  }
+
+  .roles{display:flex;flex-direction:column;gap:14px;margin:2px 0 4px}
+  .role{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start}
+  .rchip{
+    font-family:var(--mono);font-size:13px;font-weight:700;text-align:center;
+    padding:7px 4px;border-radius:9px;letter-spacing:.02em;
+  }
+  .rchip.system{color:var(--chip-system);background:var(--chip-system-bg)}
+  .rchip.user{color:var(--chip-user);background:var(--chip-user-bg)}
+  .rchip.assistant{color:var(--chip-assistant);background:var(--chip-assistant-bg)}
+  .rchip.tool{color:var(--chip-tool);background:var(--chip-tool-bg)}
+  .rdesc{font-size:15.5px;line-height:1.7;padding-top:3px}
+  .rdesc .cost{display:block;margin-top:4px;font-size:13.5px;color:var(--muted)}
+
+  .codeblock{
+    margin:4px 0 16px;background:var(--accent-soft);border:1px solid var(--line);
+    border-radius:12px;overflow-x:auto;
+  }
+  .codeblock pre{
+    margin:0;padding:16px 18px;font-family:var(--mono);font-size:13.5px;
+    line-height:1.75;color:var(--ink);white-space:pre;
+  }
+  .codeblock .cm{color:var(--faint)}
+  .codeblock .kw{color:var(--chip-system)}
+  .codeblock .st{color:var(--chip-assistant)}
+  .codeblock .fn{color:var(--chip-user)}
+
+  .keynote{
+    display:flex;gap:12px;align-items:baseline;
+    margin-top:6px;padding:13px 16px;border-radius:11px;
+    background:var(--accent-soft);border-left:4px solid var(--nc,var(--accent));
+    font-size:15px;line-height:1.65;
+  }
+  .keynote b{color:var(--nc,var(--accent));letter-spacing:.02em;flex:0 0 auto}
+  .card.c1 .keynote{--nc:#2A7FD4}
+  .card.c2 .keynote{--nc:#6B4CD6}
+  .card.c3 .keynote{--nc:#E89A1F}
+  .card.c4 .keynote{--nc:#1E9E6A}
+  .card.c5 .keynote{--nc:#D2792A}
+  .card.c6 .keynote{--nc:#D24A7C}
+
+  .pipeline{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:6px 0 18px;
+  }
+  .step{
+    min-height:78px;border:1px solid var(--line);border-radius:12px;
+    background:var(--accent-soft);padding:10px 10px 9px;
+  }
+  .step b{display:block;font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:5px}
+  .step span{display:block;font-size:13.5px;color:var(--muted);line-height:1.45}
+
+  footer{
+    margin-top:34px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:13px;color:var(--faint);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;font-family:var(--mono);letter-spacing:.02em;
+  }
+
+  @media (max-width:680px){
+    .pipeline{grid-template-columns:1fr}
+  }
+  @media (max-width:520px){
+    .role{grid-template-columns:1fr;gap:6px}
+    .rchip{justify-self:start;padding:5px 12px}
+    .keynote{align-items:flex-start;flex-direction:column;gap:4px}
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sheet">
+
+  <header>
+    <div>
+      <p class="eyebrow">Agent 开发手册 · Day 4–5 · 周四–周五</p>
+      <h1>工具调用循环：手写一个会用工具的 Agent
+        <span class="sub">Tool Calling Loop · 意图 vs 执行 · ast 安全 · for…else 兜底 · 踩坑小卡片</span>
+      </h1>
+    </div>
+    <div class="stamp" aria-label="已完成">
+      <div class="tick">✓</div>
+      <div class="txt">已完成</div>
+      <div class="dt">2026·07·09–10</div>
+    </div>
+  </header>
+
+  <section class="card c1">
+    <div class="chead">
+      <div class="num blue">01</div>
+      <div class="q">
+        <span class="k">循环骨架</span>
+        <span class="t">工具调用是一场"来回"，不是一次问答</span>
+      </div>
+    </div>
+    <div class="ans">
+      <div class="pipeline">
+        <div class="step"><b>1. 用户提问</b><span>一条 user 消息进历史。</span></div>
+        <div class="step"><b>2. 模型点单</b><span>返回 tool_calls：要调谁、参数是啥。</span></div>
+        <div class="step"><b>3. 本地执行</b><span>execute_tool 在你机器上真跑函数。</span></div>
+        <div class="step"><b>4. 结果回填</b><span>role="tool" + tool_call_id 塞回历史。</span></div>
+        <div class="step"><b>5. 再问一遍</b><span>带新历史重发，直到出文本才停。</span></div>
+      </div>
+      <ul>
+        <li>核心是一个循环：<span class="hl blue">发请求 → 有 tool_calls 就执行并回填 → 再发请求</span>，直到模型不再点工具、给出最终文本。</li>
+        <li>一轮响应里可能有<span class="inline-code">多个 tool_calls</span>，必须 <span class="inline-code">for</span> 逐个执行、逐个回填，别漏。</li>
+        <li>顺序铁律：<span class="hl blue">先 append 带 tool_calls 的整条 assistant 消息，再 append 每个 tool 结果</span>。顺序反了，模型对不上账，直接报错。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>用户问一次，<b>模型和你的代码要来回好几趟</b>；历史这本账，从头到尾是你的循环在记。</span></div>
+    </div>
+  </section>
+
+  <section class="card c2">
+    <div class="chead">
+      <div class="num purple">02</div>
+      <div class="q">
+        <span class="k">意图 vs 执行</span>
+        <span class="t">模型真的执行函数了吗？——没有</span>
+      </div>
+    </div>
+    <div class="ans">
+      <div class="roles">
+        <div class="role">
+          <div class="rchip user">模型 LLM</div>
+          <div class="rdesc">只吐一段 JSON：<span class="inline-code">name</span> + <span class="inline-code">arguments</span>，意思是"我<b>想</b>调 calculator"。这叫<span class="hl purple">调用意图</span>。<span class="cost">它从头到尾一行代码都没跑。</span></div>
+        </div>
+        <div class="role">
+          <div class="rchip tool">你的代码</div>
+          <div class="rdesc"><span class="inline-code">execute_tool</span> 里 <span class="inline-code">function(**args)</span> 才是真正运行函数的地方。<span class="cost">CPU 在你这边，执行发生在你的进程里。</span></div>
+        </div>
+        <div class="role">
+          <div class="rchip assistant">所以</div>
+          <div class="rdesc"><span class="hl purple">安全边界归你</span>，因为跑代码的机器是你的。模型让算啥你就算啥，兜底得你来。</div>
+        </div>
+      </div>
+      <div class="keynote"><b>口诀</b><span>模型只会"点单"，<b>炒菜的是你的代码</b>。这也是为什么工具的安全责任在你，不在模型。</span></div>
+    </div>
+  </section>
+
+  <section class="card c3">
+    <div class="chead">
+      <div class="num amber">03</div>
+      <div class="q">
+        <span class="k">模型怎么选工具</span>
+        <span class="t">它唯一的依据，是你写的那句 description</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>请求里 <span class="inline-code">tools=tools</span> 会把每个工具的<span class="hl amber">说明书（name / description / parameters）</span>一起发给模型——但<b>不包含</b>你的函数实现，模型看不到函数体。</li>
+        <li>模型拿用户意图去和各工具的 <span class="inline-code">description</span> 做匹配，挑最像的那个，再自己填 <span class="inline-code">arguments</span>。</li>
+        <li>所以 <span class="hl amber">description 写烂 = 模型选错工具、填错参数</span>。它不是笨，是你没把"什么时候该用我"讲清楚。</li>
+      </ul>
+      <div class="codeblock"><pre>{
+  <span class="st">"name"</span>: <span class="st">"calculator"</span>,
+  <span class="cm">// ↓ 模型选不选它，全看这一句</span>
+  <span class="st">"description"</span>: <span class="st">"执行数学表达式计算；需要数学运算时必须使用"</span>,
+  <span class="st">"parameters"</span>: { <span class="cm">/* expression: string */</span> }
+}</pre></div>
+      <div class="keynote"><b>口诀</b><span><b>80% 的"模型不听话"，是 description 没写好</b>，不是模型笨。工具描述要写清"什么时候用我"。</span></div>
+    </div>
+  </section>
+
+  <section class="card c4">
+    <div class="chead">
+      <div class="num green">04</div>
+      <div class="q">
+        <span class="k">工具安全</span>
+        <span class="t">calculator 用 ast 白名单，绝不用 eval</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><span class="inline-code">eval("字符串")</span> 是把字符串<span class="hl green">当代码直接执行</span>，给啥跑啥。喂它 <span class="inline-code">__import__("os").system("del ...")</span> 一样照删你的盘。</li>
+        <li><span class="inline-code">ast.parse</span> 是<span class="hl green">只把字符串拆成语法树、不执行</span>。拆开后你逐个节点检查，只放行认识的类型（数字、+−×÷）。</li>
+        <li>恶意的 <span class="inline-code">ast.Call</span>（函数调用）节点不在白名单里，当场 <span class="inline-code">raise</span>，一行都没跑。这叫<b>白名单：默认全拒，只放行明确允许的</b>。</li>
+      </ul>
+      <div class="codeblock"><pre>node = ast.parse(expr, mode=<span class="st">"eval"</span>).body   <span class="cm"># 只拆树，不执行</span>
+
+<span class="kw">if</span> isinstance(node, ast.Constant):          <span class="cm"># 是数字 → 放行</span>
+    <span class="kw">return</span> node.value
+<span class="kw">elif</span> isinstance(node, ast.BinOp):          <span class="cm"># 是 +−×÷ → 放行</span>
+    ...
+<span class="kw">else</span>:
+    <span class="kw">raise</span> TypeError(...)                    <span class="cm"># 其它一律拒绝</span></pre></div>
+      <div class="keynote"><b>口诀</b><span><b>eval 来者不拒，ast 先安检再放行</b>。凡是处理不可信输入的工具，默认姿势就是"解析 + 白名单"。</span></div>
+    </div>
+  </section>
+
+  <section class="card c5">
+    <div class="chead">
+      <div class="num orange">05</div>
+      <div class="q">
+        <span class="k">循环兜底</span>
+        <span class="t">while True 调 LLM 是要出事的：加 MAX_TURNS</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><span class="inline-code">while True</span> = "信任模型会自己停"。万一模型抽风反复点工具，<span class="hl orange">循环永不结束，每转一圈发一次 API，烧钱到爆账单</span>。</li>
+        <li>改成 <span class="inline-code">for turn in range(MAX_TURNS)</span>：最多转固定圈数，兜底刹车。真实产品没人敢用裸 while True 调模型。</li>
+        <li><span class="inline-code">for…else</span> 的 <span class="hl orange">else 只在"循环自然跑完、一次都没 break"时触发</span>——正好对应"转满上限还没出答案"的异常情况。正常答完会 break，else 被跳过。</li>
+      </ul>
+      <div class="codeblock"><pre>MAX_TURNS = <span class="st">10</span>
+
+<span class="kw">for</span> turn <span class="kw">in</span> range(MAX_TURNS):
+    message = send_messages(messages)
+    messages.append(message)
+    <span class="kw">if</span> <span class="kw">not</span> message.tool_calls:
+        print(message.content)   <span class="cm"># 先打印答案</span>
+        <span class="kw">break</span>                    <span class="cm"># 再跳出 → else 被跳过</span>
+    <span class="kw">for</span> tool <span class="kw">in</span> message.tool_calls:
+        ...                      <span class="cm"># 执行工具、结果回填</span>
+<span class="kw">else</span>:
+    print(<span class="st">"[达到最大轮数，强制停止]"</span>)   <span class="cm"># 只有转满才到这</span></pre></div>
+      <div class="keynote"><b>口诀</b><span><b>break 前先 print，else 挂外层 for</b>；缩进错一格，else 挂到内层就全毁。while True 调模型 = 定时炸弹。</span></div>
+    </div>
+  </section>
+
+  <section class="card c6">
+    <div class="chead">
+      <div class="num pink">06</div>
+      <div class="q">
+        <span class="k">工程好习惯</span>
+        <span class="t">让代码替你把意图说清楚（公司标准）</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><b>魔法数字提常量</b>：<span class="inline-code">MAX_TURNS = 10</span> 比循环里裸埋的 <span class="inline-code">10</span> 会说话。<span class="hl pink">判据</span>：这数字换个值会改变行为、或半年后看不懂它为啥是这个值 → 提；<span class="inline-code">x + 1</span> 里的 1 就别提，搞出 <span class="inline-code">ONE = 1</span> 反是灾难。</li>
+        <li><b>用不到的循环变量写 <span class="inline-code">_</span></b>：它是给读者递信号"我<b>故意</b>不用、不是漏了"。或者干脆拿来打 <span class="inline-code">第 N 轮</span> 日志。<span class="hl pink">最忌"定义了又不碰"的半吊子</span>。</li>
+        <li><b>import 放模块顶部</b>：别塞进函数体（除非可选依赖或启动很慢的重包才延迟导入）。—— 这是下次会当场纠的那类小习惯。</li>
+      </ul>
+      <div class="keynote"><b>心法</b><span>常量、<span class="inline-code">_</span>、import 位置背后是同一件事：<b>代码要替你把意图说清楚，别让三个月后的自己去猜</b>。这就是"能跑"和"能维护"的分界线。</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>llm-practice · 03_tool_loop.py（Tool Calling · 纯 SDK 无框架）</span>
+    <span>Day 4–5 · PASS ✓</span>
+  </footer>
+
+</div>
+</div>
+</body>
+</html>
