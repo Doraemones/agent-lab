@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeetCode 128 最长连续序列 · 算法小卡片</title>
+<style>
+  :root{
+    --paper:#F7F8FA; --card:#FFFFFF; --ink:#1E2330; --muted:#5B647A;
+    --faint:#8A93A6; --line:#E6E9F1; --accent:#33406B; --accent-soft:#EEF1F9;
+    --m-amber:#FFE08A; --m-blue:#A9D6FF; --m-green:#B2EEC6;
+    --m-purple:#DBC8FF; --m-orange:#FFC49B; --m-pink:#FFC2DB;
+    --chip-system:#7C5CE0; --chip-system-bg:#EFE9FF;
+    --chip-user:#2A7FD4; --chip-user-bg:#E3F1FF;
+    --chip-assistant:#1E9E6A; --chip-assistant-bg:#DCF6E9;
+    --chip-tool:#D2792A; --chip-tool-bg:#FCEBD8;
+    --stamp:#1E9E6A;
+    --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    --sans:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#131519; --card:#1C1F27; --ink:#E8EAF1; --muted:#9AA3B4;
+      --faint:#6E7688; --line:#2A2E39; --accent:#AEB9E6; --accent-soft:#242938;
+      --m-amber:rgba(255,206,84,.30); --m-blue:rgba(96,175,255,.30);
+      --m-green:rgba(70,214,150,.30); --m-purple:rgba(168,128,255,.32);
+      --m-orange:rgba(255,150,80,.30); --m-pink:rgba(255,120,180,.30);
+      --chip-system:#B79CFF; --chip-system-bg:#2C2544;
+      --chip-user:#79BAFF; --chip-user-bg:#1E2E44;
+      --chip-assistant:#57D69A; --chip-assistant-bg:#173229;
+      --chip-tool:#F0A85A; --chip-tool-bg:#33260F;
+      --stamp:#57D69A;
+    }
+  }
+  *{box-sizing:border-box} body{margin:0}
+  .wrap{font-family:var(--sans);background:var(--paper);color:var(--ink);
+    min-height:100vh;padding:clamp(20px,5vw,64px) clamp(16px,4vw,32px);line-height:1.5;}
+  .sheet{max-width:880px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
+    flex-wrap:wrap;border-bottom:2px solid var(--line);padding-bottom:26px;margin-bottom:38px;}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 12px;}
+  h1{font-size:clamp(26px,4.4vw,38px);line-height:1.2;margin:0;font-weight:800;letter-spacing:0;text-wrap:balance;color:var(--ink);}
+  h1 .sub{display:block;font-size:.52em;font-weight:600;color:var(--muted);margin-top:10px;letter-spacing:0}
+  .stamp{flex:0 0 auto;transform:rotate(-7deg);border:2.5px solid var(--stamp);border-radius:12px;
+    color:var(--stamp);padding:10px 16px 8px;text-align:center;background:color-mix(in srgb,var(--stamp) 8%,transparent);}
+  .stamp .tick{font-size:22px;line-height:1;font-weight:800}
+  .stamp .txt{font-size:15px;font-weight:800;letter-spacing:.14em;margin-top:4px}
+  .stamp .dt{font-size:10px;letter-spacing:.14em;margin-top:5px;font-family:var(--mono);opacity:.85}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:clamp(20px,3.5vw,32px);margin-bottom:26px;
+    box-shadow:0 1px 2px rgba(20,25,45,.04),0 8px 24px -18px rgba(20,25,45,.28);
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;}
+  .card:nth-of-type(1){animation-delay:.05s} .card:nth-of-type(2){animation-delay:.13s}
+  .card:nth-of-type(3){animation-delay:.21s} .card:nth-of-type(4){animation-delay:.29s}
+  .card:nth-of-type(5){animation-delay:.37s} .card:nth-of-type(6){animation-delay:.45s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .chead{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+  .num{flex:0 0 auto;width:44px;height:44px;border-radius:11px;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:17px;color:#fff;}
+  .num.blue{background:linear-gradient(135deg,#4A9BEC,#2A7FD4)}
+  .num.purple{background:linear-gradient(135deg,#8B6BE8,#6B4CD6)}
+  .num.amber{background:linear-gradient(135deg,#F5B93C,#E89A1F)}
+  .num.green{background:linear-gradient(135deg,#27BF80,#168A5C)}
+  .num.orange{background:linear-gradient(135deg,#F4A35D,#D2792A)}
+  .num.pink{background:linear-gradient(135deg,#F06B9A,#D24A7C)}
+  .q{margin:2px 0 0}
+  .q .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block;margin-bottom:5px}
+  .q .t{font-size:clamp(17px,2.4vw,20px);font-weight:700;line-height:1.4;color:var(--ink)}
+  .ans{font-size:16.5px;line-height:1.82;color:var(--ink)}
+  .ans p{margin:0 0 14px}
+  .ans ul{margin:0 0 14px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .ans li{position:relative;padding-left:22px}
+  .ans li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55}
+  .hl{background-image:linear-gradient(180deg,transparent 56%,var(--m) 56%,var(--m) 92%,transparent 92%);
+    background-repeat:no-repeat;background-size:100% 100%;padding:.02em .14em;border-radius:.12em;font-weight:600;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;}
+  .hl.amber{--m:var(--m-amber)} .hl.blue{--m:var(--m-blue)} .hl.green{--m:var(--m-green)}
+  .hl.purple{--m:var(--m-purple)} .hl.orange{--m:var(--m-orange)} .hl.pink{--m:var(--m-pink)}
+  code,.mono{font-family:var(--mono);font-size:.88em}
+  .inline-code{background:var(--accent-soft);padding:.08em .38em;border-radius:6px;
+    font-family:var(--mono);font-size:.85em;color:var(--accent);white-space:nowrap;}
+  .roles{display:flex;flex-direction:column;gap:14px;margin:2px 0 4px}
+  .role{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start}
+  .rchip{font-family:var(--mono);font-size:13px;font-weight:700;text-align:center;padding:7px 4px;border-radius:9px;letter-spacing:.02em;}
+  .rchip.system{color:var(--chip-system);background:var(--chip-system-bg)}
+  .rchip.user{color:var(--chip-user);background:var(--chip-user-bg)}
+  .rchip.assistant{color:var(--chip-assistant);background:var(--chip-assistant-bg)}
+  .rchip.tool{color:var(--chip-tool);background:var(--chip-tool-bg)}
+  .rdesc{font-size:15.5px;line-height:1.7;padding-top:3px}
+  .rdesc .cost{display:block;margin-top:4px;font-size:13.5px;color:var(--muted)}
+  .codeblock{margin:4px 0 16px;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;overflow-x:auto;}
+  .codeblock pre{margin:0;padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.75;color:var(--ink);white-space:pre;}
+  .codeblock .cm{color:var(--faint)} .codeblock .kw{color:var(--chip-system)}
+  .codeblock .st{color:var(--chip-assistant)} .codeblock .fn{color:var(--chip-user)}
+  .keynote{display:flex;gap:12px;align-items:baseline;margin-top:6px;padding:13px 16px;border-radius:11px;
+    background:var(--accent-soft);border-left:4px solid var(--nc,var(--accent));font-size:15px;line-height:1.65;}
+  .keynote b{color:var(--nc,var(--accent));letter-spacing:.02em;flex:0 0 auto}
+  .card.c1 .keynote{--nc:#2A7FD4} .card.c2 .keynote{--nc:#6B4CD6} .card.c3 .keynote{--nc:#E89A1F}
+  .card.c4 .keynote{--nc:#1E9E6A} .card.c5 .keynote{--nc:#D2792A} .card.c6 .keynote{--nc:#D24A7C}
+  .tbl{width:100%;border-collapse:collapse;margin:4px 0 16px;font-size:14.5px}
+  .tbl th,.tbl td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  .tbl th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .tbl td .mono{color:var(--chip-user)}
+  footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--faint);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-family:var(--mono);letter-spacing:.02em;}
+  @media (max-width:520px){
+    .role{grid-template-columns:1fr;gap:6px} .rchip{justify-self:start;padding:5px 12px}
+    .keynote{align-items:flex-start;flex-direction:column;gap:4px}
+    .tbl{display:block;overflow-x:auto;white-space:nowrap}
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sheet">
+
+  <header>
+    <div>
+      <p class="eyebrow">算法刷题 · LeetCode 128 · Hot 100 哈希专题</p>
+      <h1>最长连续序列：set 判存在，只从起点走
+        <span class="sub">哈希第二把刀 set · O(n) 卡排序 · 死循环 TLE · 补丁链复盘 · 踩坑小卡片</span>
+      </h1>
+    </div>
+    <div class="stamp" aria-label="已完成">
+      <div class="tick">✓</div>
+      <div class="txt">已通关</div>
+      <div class="dt">2026·07·10</div>
+    </div>
+  </header>
+
+  <section class="card c1">
+    <div class="chead">
+      <div class="num blue">01</div>
+      <div class="q">
+        <span class="k">哈希两把刀</span>
+        <span class="t">这题不设计 key——set 是哈希的另一半本事</span>
+      </div>
+    </div>
+    <div class="ans">
+      <table class="tbl">
+        <tr><th>工具</th><th>干什么</th><th>见过的题</th></tr>
+        <tr><td><span class="mono">dict</span> (key→value)</td><td>按签名分组 / 计数 / 查表</td><td>LC1 两数之和、LC49 异位词</td></tr>
+        <tr><td><span class="mono">set</span> (只有 key)</td><td><b>O(1) 判断"在不在"</b></td><td>本题 LC128</td></tr>
+      </table>
+      <ul>
+        <li>set = 只留钥匙、不挂东西的字典。只回答一个问题:<span class="hl blue">x in s?——瞬间答你</span>。对比 <span class="inline-code">x in list</span> 要从头扫到尾(O(n))。</li>
+        <li>别把 LC49 的"哈希=设计key"当万能定势——<span class="hl blue">"在不在"类问题,set 一把梭,不需要任何 key 设计</span>。</li>
+        <li>零件:<span class="inline-code">set(nums)</span> 一行建集(与 list() 同族);塞入用 <span class="inline-code">.add()</span> 不是 append;重复元素自动只留一份。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>分组计数找 <b>dict</b>,判断存在找 <b>set</b>——哈希家族两把刀,认清题型再拔刀。</span></div>
+    </div>
+  </section>
+
+  <section class="card c2">
+    <div class="chead">
+      <div class="num purple">02</div>
+      <div class="q">
+        <span class="k">核心洞察</span>
+        <span class="t">只从"一串的起点"开始数,O(n²) 变 O(n)</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>题目卡 <span class="hl purple">O(n)</span>,就是冲着"不许排序"来的(排序 O(n log n),人人都会,不考你这个)。</li>
+        <li>天真版:每个数都往右数 num+1、num+2…——<span class="inline-code">[1,2,3,4,5]</span> 里 1 走到 5、2 又走到 5、3 又走……<span class="hl purple">每个数重走后缀,O(n²) 假货</span>。</li>
+        <li>题眼:<span class="hl purple">n-1 不在 set 里 ⇒ n 左边没邻居 ⇒ n 是一串的头</span>。只有头才有资格起跑;非头一票否决直接跳过。每个数最多被走到一次 → 真 O(n)。</li>
+      </ul>
+      <div class="codeblock"><pre>nums_set = <span class="fn">set</span>(nums)
+max_length = <span class="st">0</span>
+<span class="kw">for</span> n <span class="kw">in</span> nums_set:              <span class="cm"># 遍历 set,重复数字不白查</span>
+    <span class="kw">if</span> n - <span class="st">1</span> <span class="kw">not in</span> nums_set:   <span class="cm"># 起点判据只有这一条</span>
+        temp, length = n, <span class="st">1</span>
+        <span class="kw">while</span> temp + <span class="st">1</span> <span class="kw">in</span> nums_set:
+            temp += <span class="st">1</span>            <span class="cm"># 人往前走</span>
+            length += <span class="st">1</span>
+        max_length = <span class="fn">max</span>(length, max_length)
+<span class="kw">return</span> max_length</pre></div>
+      <div class="keynote"><b>套路</b><span><b>线性扫描怕重复劳动,就只从每段的起点干活</b>——判起点的代价 O(1),省下的是整段重走。</span></div>
+    </div>
+  </section>
+
+  <section class="card c3">
+    <div class="chead">
+      <div class="num amber">03</div>
+      <div class="q">
+        <span class="k">血泪坑 · TLE</span>
+        <span class="t">while 的条件变量,循环体内必须有人推它</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>翻车现场:<span class="inline-code">while temp + 1 in nums_set:</span> 循环体里只写了 <span class="inline-code">length += 1</span>,<span class="hl amber">temp 一步没动</span> → 条件永远为真 → 死循环 → LeetCode 判 TLE(超时)。</li>
+        <li>脑子里想的是"沿着 n+1、n+2 往右走",但代码里"走"的那句(<span class="inline-code">temp += 1</span>)没写——<span class="hl amber">意图和代码差一句,就是死循环</span>。</li>
+        <li>通用体检项:写完任何 while,盯着条件问一句——<b>条件里的变量,循环体内谁在推它?</b> LC7 的推进器是 <span class="inline-code">var //= 10</span>,本题是 <span class="inline-code">temp += 1</span>。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span><b>while 必有推进器</b>。没人推条件变量,循环就转到天荒地老。</span></div>
+    </div>
+  </section>
+
+  <section class="card c4">
+    <div class="chead">
+      <div class="num green">04</div>
+      <div class="q">
+        <span class="k">补丁链复盘</span>
+        <span class="t">一个病根引出两块膏药,拔根它们全下岗</span>
+      </div>
+    </div>
+    <div class="ans">
+      <div class="codeblock"><pre><span class="cm">病根: if 里多写了 and n+1 in nums_set  → 孤点[5]被挡在外</span>
+<span class="cm">  ↓ 症状: [5] 返回 0</span>
+<span class="cm">膏药1: return max(max_length, 1)      → [5] 对了,但空数组变 1</span>
+<span class="cm">  ↓ 新伤: [] 返回 1</span>
+<span class="cm">膏药2: if len(nums)==0: return 0      → 救膏药1</span>
+<span class="cm">三块互相搀扶,拆任何一块全塌。拔掉病根 → 两块膏药同时下岗。</span></pre></div>
+      <ul>
+        <li>起点的定义只有一条:<span class="hl green">n-1 不在 set</span>。右边有没有人是 while 该发现的事,不是入场券——多加的半句把长度为 1 的序列判了死刑。</li>
+        <li>"改到绿为止"是要戒的瘾:每次 WA 都在指认病根,你却在出口调膏药配方。<span class="hl green">看懂为什么红,才是本事</span>。</li>
+      </ul>
+      <div class="keynote"><b>套路</b><span><b>修 bug 拔根因,别用补丁供养补丁</b>——补丁需要新补丁来救,就是走错路的铁证。</span></div>
+    </div>
+  </section>
+
+  <section class="card c5">
+    <div class="chead">
+      <div class="num orange">05</div>
+      <div class="q">
+        <span class="k">空数组之辩</span>
+        <span class="t">不用单独 if——for 的零圈天然吞掉它</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>把 <span class="inline-code">[]</span> 走一遍:<span class="inline-code">set([])</span> 不炸 → <span class="inline-code">for</span> 遍历空 set <span class="hl orange">零圈,静默跳过</span> → 返回初始值 0,恰是正确答案。<b>没有任何一步需要救。</b></li>
+        <li>Python 里空容器遍历<b>不报错、不溢出</b>,危险只有一种:你以为它走了某段逻辑而它没走 → 后果是 <span class="hl orange">WA(答案错),不是 crash(程序崩)</span>。"溢出"只属于定宽整数算术,别当万能怕点。</li>
+        <li>什么时候才真要判空?判据:<b>空输入走正常逻辑会不会炸或算错</b>。<span class="inline-code">nums[0]</span>、<span class="inline-code">sum/len</span> 会炸——挡;for 遍历、本题——天然正确,挡它就是画蛇添足。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>好算法把边界当普通情况<b>顺路吞掉</b>,而不是门口摆一排 if。防御要防真枪,不防空气。</span></div>
+    </div>
+  </section>
+
+  <section class="card c6">
+    <div class="chead">
+      <div class="num pink">06</div>
+      <div class="q">
+        <span class="k">Review 纪律</span>
+        <span class="t">reviewer 的每一条:要么改,要么回,不能已读不回</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>本题黄字被点名到<b>第五次</b>才改:死赋值 <span class="inline-code">length = 0</span>(第一次被读前必被覆盖,没人读的赋值就删)、<span class="inline-code">not x in s</span> 应写 <span class="inline-code">x not in s</span>、冒号前多余空格。</li>
+        <li>🔴 优先于 🟡 是执行顺序,<span class="hl pink">不是"🟡 可以永远不管"</span>。公司规矩:review 意见要么改、要么回一句为什么不改——已读不回,第二轮 review 就会被点名。</li>
+        <li>变量遍历 set 用 <span class="inline-code">for n in nums_set:</span>——变量名后<b>不加括号</b>;<span class="inline-code">()</span> 只跟可调用的东西(函数/方法)搭配。</li>
+      </ul>
+      <div class="keynote"><b>心法</b><span>本题双句沉淀:<b>①只从起点干活;②拔根因,别用补丁供养补丁。</b>(下次开工前背诵检查 😤)</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>LeetCode 128 · 最长连续序列 · 哈希 set · O(n)</span>
+    <span>算法 · 第 3 题 · PASS ✓</span>
+  </footer>
+
+</div>
+</div>
+</body>
+</html>
