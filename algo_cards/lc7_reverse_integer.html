@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeetCode 7 整数反转 · 算法小卡片</title>
+<style>
+  :root{
+    --paper:#F7F8FA; --card:#FFFFFF; --ink:#1E2330; --muted:#5B647A;
+    --faint:#8A93A6; --line:#E6E9F1; --accent:#33406B; --accent-soft:#EEF1F9;
+    --m-amber:#FFE08A; --m-blue:#A9D6FF; --m-green:#B2EEC6;
+    --m-purple:#DBC8FF; --m-orange:#FFC49B; --m-pink:#FFC2DB;
+    --chip-system:#7C5CE0; --chip-system-bg:#EFE9FF;
+    --chip-user:#2A7FD4; --chip-user-bg:#E3F1FF;
+    --chip-assistant:#1E9E6A; --chip-assistant-bg:#DCF6E9;
+    --chip-tool:#D2792A; --chip-tool-bg:#FCEBD8;
+    --stamp:#1E9E6A;
+    --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    --sans:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#131519; --card:#1C1F27; --ink:#E8EAF1; --muted:#9AA3B4;
+      --faint:#6E7688; --line:#2A2E39; --accent:#AEB9E6; --accent-soft:#242938;
+      --m-amber:rgba(255,206,84,.30); --m-blue:rgba(96,175,255,.30);
+      --m-green:rgba(70,214,150,.30); --m-purple:rgba(168,128,255,.32);
+      --m-orange:rgba(255,150,80,.30); --m-pink:rgba(255,120,180,.30);
+      --chip-system:#B79CFF; --chip-system-bg:#2C2544;
+      --chip-user:#79BAFF; --chip-user-bg:#1E2E44;
+      --chip-assistant:#57D69A; --chip-assistant-bg:#173229;
+      --chip-tool:#F0A85A; --chip-tool-bg:#33260F;
+      --stamp:#57D69A;
+    }
+  }
+  *{box-sizing:border-box} body{margin:0}
+  .wrap{font-family:var(--sans);background:var(--paper);color:var(--ink);
+    min-height:100vh;padding:clamp(20px,5vw,64px) clamp(16px,4vw,32px);line-height:1.5;}
+  .sheet{max-width:880px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
+    flex-wrap:wrap;border-bottom:2px solid var(--line);padding-bottom:26px;margin-bottom:38px;}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 12px;}
+  h1{font-size:clamp(26px,4.4vw,38px);line-height:1.2;margin:0;font-weight:800;letter-spacing:0;text-wrap:balance;color:var(--ink);}
+  h1 .sub{display:block;font-size:.52em;font-weight:600;color:var(--muted);margin-top:10px;letter-spacing:0}
+  .stamp{flex:0 0 auto;transform:rotate(-7deg);border:2.5px solid var(--stamp);border-radius:12px;
+    color:var(--stamp);padding:10px 16px 8px;text-align:center;background:color-mix(in srgb,var(--stamp) 8%,transparent);}
+  .stamp .tick{font-size:22px;line-height:1;font-weight:800}
+  .stamp .txt{font-size:15px;font-weight:800;letter-spacing:.14em;margin-top:4px}
+  .stamp .dt{font-size:10px;letter-spacing:.14em;margin-top:5px;font-family:var(--mono);opacity:.85}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:clamp(20px,3.5vw,32px);margin-bottom:26px;
+    box-shadow:0 1px 2px rgba(20,25,45,.04),0 8px 24px -18px rgba(20,25,45,.28);
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;}
+  .card:nth-of-type(1){animation-delay:.05s} .card:nth-of-type(2){animation-delay:.13s}
+  .card:nth-of-type(3){animation-delay:.21s} .card:nth-of-type(4){animation-delay:.29s}
+  .card:nth-of-type(5){animation-delay:.37s} .card:nth-of-type(6){animation-delay:.45s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .chead{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+  .num{flex:0 0 auto;width:44px;height:44px;border-radius:11px;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:17px;color:#fff;}
+  .num.blue{background:linear-gradient(135deg,#4A9BEC,#2A7FD4)}
+  .num.purple{background:linear-gradient(135deg,#8B6BE8,#6B4CD6)}
+  .num.amber{background:linear-gradient(135deg,#F5B93C,#E89A1F)}
+  .num.green{background:linear-gradient(135deg,#27BF80,#168A5C)}
+  .num.orange{background:linear-gradient(135deg,#F4A35D,#D2792A)}
+  .num.pink{background:linear-gradient(135deg,#F06B9A,#D24A7C)}
+  .q{margin:2px 0 0}
+  .q .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block;margin-bottom:5px}
+  .q .t{font-size:clamp(17px,2.4vw,20px);font-weight:700;line-height:1.4;color:var(--ink)}
+  .ans{font-size:16.5px;line-height:1.82;color:var(--ink)}
+  .ans p{margin:0 0 14px}
+  .ans ul{margin:0 0 14px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .ans li{position:relative;padding-left:22px}
+  .ans li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55}
+  .hl{background-image:linear-gradient(180deg,transparent 56%,var(--m) 56%,var(--m) 92%,transparent 92%);
+    background-repeat:no-repeat;background-size:100% 100%;padding:.02em .14em;border-radius:.12em;font-weight:600;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;}
+  .hl.amber{--m:var(--m-amber)} .hl.blue{--m:var(--m-blue)} .hl.green{--m:var(--m-green)}
+  .hl.purple{--m:var(--m-purple)} .hl.orange{--m:var(--m-orange)} .hl.pink{--m:var(--m-pink)}
+  code,.mono{font-family:var(--mono);font-size:.88em}
+  .inline-code{background:var(--accent-soft);padding:.08em .38em;border-radius:6px;
+    font-family:var(--mono);font-size:.85em;color:var(--accent);white-space:nowrap;}
+  .roles{display:flex;flex-direction:column;gap:14px;margin:2px 0 4px}
+  .role{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start}
+  .rchip{font-family:var(--mono);font-size:13px;font-weight:700;text-align:center;padding:7px 4px;border-radius:9px;letter-spacing:.02em;}
+  .rchip.system{color:var(--chip-system);background:var(--chip-system-bg)}
+  .rchip.user{color:var(--chip-user);background:var(--chip-user-bg)}
+  .rchip.assistant{color:var(--chip-assistant);background:var(--chip-assistant-bg)}
+  .rchip.tool{color:var(--chip-tool);background:var(--chip-tool-bg)}
+  .rdesc{font-size:15.5px;line-height:1.7;padding-top:3px}
+  .rdesc .cost{display:block;margin-top:4px;font-size:13.5px;color:var(--muted)}
+  .codeblock{margin:4px 0 16px;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;overflow-x:auto;}
+  .codeblock pre{margin:0;padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.75;color:var(--ink);white-space:pre;}
+  .codeblock .cm{color:var(--faint)} .codeblock .kw{color:var(--chip-system)}
+  .codeblock .st{color:var(--chip-assistant)} .codeblock .fn{color:var(--chip-user)}
+  .keynote{display:flex;gap:12px;align-items:baseline;margin-top:6px;padding:13px 16px;border-radius:11px;
+    background:var(--accent-soft);border-left:4px solid var(--nc,var(--accent));font-size:15px;line-height:1.65;}
+  .keynote b{color:var(--nc,var(--accent));letter-spacing:.02em;flex:0 0 auto}
+  .card.c1 .keynote{--nc:#2A7FD4} .card.c2 .keynote{--nc:#6B4CD6} .card.c3 .keynote{--nc:#E89A1F}
+  .card.c4 .keynote{--nc:#1E9E6A} .card.c5 .keynote{--nc:#D2792A} .card.c6 .keynote{--nc:#D24A7C}
+  .tbl{width:100%;border-collapse:collapse;margin:4px 0 16px;font-size:14.5px}
+  .tbl th,.tbl td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  .tbl th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .tbl td .mono{color:var(--chip-user)}
+  footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--faint);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-family:var(--mono);letter-spacing:.02em;}
+  @media (max-width:520px){
+    .role{grid-template-columns:1fr;gap:6px} .rchip{justify-self:start;padding:5px 12px}
+    .keynote{align-items:flex-start;flex-direction:column;gap:4px}
+    .tbl{display:block;overflow-x:auto;white-space:nowrap}
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sheet">
+
+  <header>
+    <div>
+      <p class="eyebrow">算法刷题 · LeetCode 7 · 第 1 题</p>
+      <h1>整数反转：考的不是反转，是溢出
+        <span class="sub">%10 剥位 · //10 削位 · Py2/Py3 除法坑 · 事后 vs 事前拦溢出 · 踩坑小卡片</span>
+      </h1>
+    </div>
+    <div class="stamp" aria-label="已完成">
+      <div class="tick">✓</div>
+      <div class="txt">已通关</div>
+      <div class="dt">2026·07·09</div>
+    </div>
+  </header>
+
+  <section class="card c1">
+    <div class="chead">
+      <div class="num blue">01</div>
+      <div class="q">
+        <span class="k">真考点</span>
+        <span class="t">反转是白给的，面试官埋的雷是溢出</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>反转本身三行搞定（<span class="inline-code">%10</span> 剥末位、<span class="inline-code">//10</span> 削末位、拼回去）。<span class="hl blue">真考点是 32 位有符号整数溢出</span>。</li>
+        <li>范围 <span class="inline-code">[−2³¹, 2³¹−1]</span> = <span class="inline-code">[−2147483648, 2147483647]</span>。反转会撑爆，比如 <span class="inline-code">1534236469</span> 反转后越界，要求返回 <span class="inline-code">0</span>。</li>
+        <li>隐藏清单必须自己报出来：<span class="hl blue">负数、末尾零（120→21）、溢出边界、INT_MIN 本身</span>。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>题面写"反转"，考的是<b>边界思维</b>：不满足于正常输入能跑，逼问极端情况会怎样。</span></div>
+    </div>
+  </section>
+
+  <section class="card c2">
+    <div class="chead">
+      <div class="num purple">02</div>
+      <div class="q">
+        <span class="k">数值法核心</span>
+        <span class="t">剥一位、拼一位，末尾零自动消失</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>核心就一行递推：<span class="hl purple">result = result * 10 + digit</span>。每来一个新数字，老的 result 乘 10"腾位"，再把新数字塞进个位。</li>
+        <li>trace <span class="inline-code">123</span>：<span class="inline-code">0→3→32→321</span>。<span class="inline-code">%10</span> 取末位、<span class="inline-code">//10</span> 削末位，削到 <span class="inline-code">0</span> 就结束。</li>
+        <li><span class="hl purple">末尾零是"字符串法自己造出来的假问题"</span>：数值法里 120 剥出 0 → result 还是 0，自然没了，什么都不用管。</li>
+      </ul>
+      <div class="codeblock"><pre>result = <span class="st">0</span>
+<span class="kw">while</span> var:
+    digit = var % <span class="st">10</span>          <span class="cm"># 剥末位</span>
+    result = result * <span class="st">10</span> + digit
+    var //= <span class="st">10</span>               <span class="cm"># 削末位（注意是 //）</span></pre></div>
+      <div class="keynote"><b>口诀</b><span>选一个<b>让边界情况自己消失</b>的表示法，别选一个制造边界再打补丁的。数值法让末尾零凭空消失。</span></div>
+    </div>
+  </section>
+
+  <section class="card c3">
+    <div class="chead">
+      <div class="num amber">03</div>
+      <div class="q">
+        <span class="k">血泪坑</span>
+        <span class="t">/ 与 // 之别，以及 Python 2 已经死了</span>
+      </div>
+    </div>
+    <div class="ans">
+      <table class="tbl">
+        <tr><th></th><th>Python 3</th><th>Python 2（已 EOL）</th></tr>
+        <tr><td><span class="mono">5 / 2</span></td><td><span class="mono">2.5</span> 永远浮点</td><td><span class="mono">2</span> 偷偷整除！</td></tr>
+        <tr><td><span class="mono">5 // 2</span></td><td><span class="mono">2</span> 整除</td><td><span class="mono">2</span> 整除</td></tr>
+      </table>
+      <ul>
+        <li>本题栽的就是 <span class="inline-code">var /= 10</span>：Py3 里它把 var 变成<span class="hl amber">浮点</span>，digit 变小数、var 永远除不到 0、result 滚成 inf，全废。<b>要整除就明写 <span class="inline-code">//=</span>。</b></li>
+        <li>那个曾用 <span class="inline-code">/2.0</span> 强凑浮点的旧招，是在骗 Py2 的 <span class="inline-code">/</span>；到 Py3 直接用 <span class="inline-code">/</span> 就是浮点，扔掉。</li>
+        <li><span class="hl amber">Python 2 已于 2020 年 EOL</span>——新代码一律 Py3，LeetCode 语言框选 <span class="inline-code">Python3</span> 不是 <span class="inline-code">Python</span>。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span><b>别写"靠解释器版本才对"的代码</b>。要整除写 //，要浮点写 /，意图一眼可读，哪个 Python 上都对。</span></div>
+    </div>
+  </section>
+
+  <section class="card c4">
+    <div class="chead">
+      <div class="num green">04</div>
+      <div class="q">
+        <span class="k">溢出的两副面孔</span>
+        <span class="t">同一道题，两种语言两套解</span>
+      </div>
+    </div>
+    <div class="ans">
+      <div class="roles">
+        <div class="role">
+          <div class="rchip user">Python</div>
+          <div class="rdesc">整数<b>任意精度</b>，永不溢出、永不报错、永不失真。<span class="cost">→ 事后检查：算出真值 result，再比 [−2³¹, 2³¹−1]，越界返 0。</span></div>
+        </div>
+        <div class="role">
+          <div class="rchip tool">C++ / Java</div>
+          <div class="rdesc">int 是<b>定宽 32 位盒子</b>，越界当场坏成垃圾值。<span class="cost">→ 事前拦截：必须在 result*10+digit 之前判断会不会越界。</span></div>
+        </div>
+      </div>
+      <ul>
+        <li>Python 那句越界比较，目的不是"防程序崩"，而是<span class="hl green">模拟一个 32 位世界的业务规则</span>——它不会崩，只是题目要求越界吐 0。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>"溢出"在不同语言是两种东西：<b>Python 事后比，C++ 事前拦</b>。懂了整数模型，才算真懂溢出。</span></div>
+    </div>
+  </section>
+
+  <section class="card c5">
+    <div class="chead">
+      <div class="num orange">05</div>
+      <div class="q">
+        <span class="k">事前拦截</span>
+        <span class="t">C++ 移植版：乘之前就把溢出摁住</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>把边界拆开看：<span class="inline-code">2147483647 = 214748364 * 10 + 7</span>。乘 10 加 digit 之前，先问这一步会不会破。</li>
+        <li>两段式条件：<span class="hl orange">result > limit//10，或 result == limit//10 且 digit > limit%10</span>，命中就 return 0。</li>
+        <li>魔鬼细节——<span class="hl orange">正负边界差 1</span>：正数上限末位是 7（…647），负数取绝对值末位是 8（…648）。<span class="inline-code">limit%10</span> 自动兜住。</li>
+      </ul>
+      <div class="codeblock"><pre><span class="kw">if</span> result &gt; limit // <span class="st">10</span> \
+   <span class="kw">or</span> (result == limit // <span class="st">10</span> <span class="kw">and</span> digit &gt; limit % <span class="st">10</span>):
+    <span class="kw">return</span> <span class="st">0</span>
+result = result * <span class="st">10</span> + digit   <span class="cm"># 拦过才敢乘</span></pre></div>
+      <div class="keynote"><b>口诀</b><span>纯 Python 用不上它，但<b>面试要求"别靠大整数"、或要移植 C++/Java 时，它就是正解</b>。两版都会，才知道何时用哪版。</span></div>
+    </div>
+  </section>
+
+  <section class="card c6">
+    <div class="chead">
+      <div class="num pink">06</div>
+      <div class="q">
+        <span class="k">洞悉核心 + 好习惯</span>
+        <span class="t">比这道题更值钱的三条</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><b>先 abs 拆符号</b>：Python 负数的 <span class="inline-code">%</span>/<span class="inline-code">//</span> 反直觉（<span class="inline-code">-123%10=7</span>、<span class="inline-code">//</span> 向负无穷取整）。<span class="hl pink">用 abs 转正数处理、sign 最后贴回</span>，一次绕开所有负数坑。</li>
+        <li><b>拿到 review，先修 🔴 致命，再碰 🟡 小尾巴</b>。这次改名换行都做了、却漏了唯一让代码跑不起来的 <span class="inline-code">//=</span>——反了。</li>
+        <li><b>别过早优化</b>：想用"字符串长度判溢出"是自作聪明，一句 O(1) 的越界比较就够，分支只添 bug。</li>
+      </ul>
+      <div class="keynote"><b>心法</b><span>高手的简洁不是写得花，是<b>让麻烦没机会出现</b>：选对表示法、明写意图、先解决最要命的那一个。</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>LeetCode 7 · 整数反转 · 数值法（%10 / //10）</span>
+    <span>算法 · 第 1 题 · PASS ✓</span>
+  </footer>
+
+</div>
+</div>
+</body>
+</html>

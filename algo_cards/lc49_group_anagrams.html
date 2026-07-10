@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeetCode 49 字母异位词分组 · 算法小卡片</title>
+<style>
+  :root{
+    --paper:#F7F8FA; --card:#FFFFFF; --ink:#1E2330; --muted:#5B647A;
+    --faint:#8A93A6; --line:#E6E9F1; --accent:#33406B; --accent-soft:#EEF1F9;
+    --m-amber:#FFE08A; --m-blue:#A9D6FF; --m-green:#B2EEC6;
+    --m-purple:#DBC8FF; --m-orange:#FFC49B; --m-pink:#FFC2DB;
+    --chip-system:#7C5CE0; --chip-system-bg:#EFE9FF;
+    --chip-user:#2A7FD4; --chip-user-bg:#E3F1FF;
+    --chip-assistant:#1E9E6A; --chip-assistant-bg:#DCF6E9;
+    --chip-tool:#D2792A; --chip-tool-bg:#FCEBD8;
+    --stamp:#1E9E6A;
+    --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    --sans:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#131519; --card:#1C1F27; --ink:#E8EAF1; --muted:#9AA3B4;
+      --faint:#6E7688; --line:#2A2E39; --accent:#AEB9E6; --accent-soft:#242938;
+      --m-amber:rgba(255,206,84,.30); --m-blue:rgba(96,175,255,.30);
+      --m-green:rgba(70,214,150,.30); --m-purple:rgba(168,128,255,.32);
+      --m-orange:rgba(255,150,80,.30); --m-pink:rgba(255,120,180,.30);
+      --chip-system:#B79CFF; --chip-system-bg:#2C2544;
+      --chip-user:#79BAFF; --chip-user-bg:#1E2E44;
+      --chip-assistant:#57D69A; --chip-assistant-bg:#173229;
+      --chip-tool:#F0A85A; --chip-tool-bg:#33260F;
+      --stamp:#57D69A;
+    }
+  }
+  *{box-sizing:border-box} body{margin:0}
+  .wrap{font-family:var(--sans);background:var(--paper);color:var(--ink);
+    min-height:100vh;padding:clamp(20px,5vw,64px) clamp(16px,4vw,32px);line-height:1.5;}
+  .sheet{max-width:880px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
+    flex-wrap:wrap;border-bottom:2px solid var(--line);padding-bottom:26px;margin-bottom:38px;}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 12px;}
+  h1{font-size:clamp(26px,4.4vw,38px);line-height:1.2;margin:0;font-weight:800;letter-spacing:0;text-wrap:balance;color:var(--ink);}
+  h1 .sub{display:block;font-size:.52em;font-weight:600;color:var(--muted);margin-top:10px;letter-spacing:0}
+  .stamp{flex:0 0 auto;transform:rotate(-7deg);border:2.5px solid var(--stamp);border-radius:12px;
+    color:var(--stamp);padding:10px 16px 8px;text-align:center;background:color-mix(in srgb,var(--stamp) 8%,transparent);}
+  .stamp .tick{font-size:22px;line-height:1;font-weight:800}
+  .stamp .txt{font-size:15px;font-weight:800;letter-spacing:.14em;margin-top:4px}
+  .stamp .dt{font-size:10px;letter-spacing:.14em;margin-top:5px;font-family:var(--mono);opacity:.85}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:clamp(20px,3.5vw,32px);margin-bottom:26px;
+    box-shadow:0 1px 2px rgba(20,25,45,.04),0 8px 24px -18px rgba(20,25,45,.28);
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;}
+  .card:nth-of-type(1){animation-delay:.05s} .card:nth-of-type(2){animation-delay:.13s}
+  .card:nth-of-type(3){animation-delay:.21s} .card:nth-of-type(4){animation-delay:.29s}
+  .card:nth-of-type(5){animation-delay:.37s} .card:nth-of-type(6){animation-delay:.45s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .chead{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+  .num{flex:0 0 auto;width:44px;height:44px;border-radius:11px;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:17px;color:#fff;}
+  .num.blue{background:linear-gradient(135deg,#4A9BEC,#2A7FD4)}
+  .num.purple{background:linear-gradient(135deg,#8B6BE8,#6B4CD6)}
+  .num.amber{background:linear-gradient(135deg,#F5B93C,#E89A1F)}
+  .num.green{background:linear-gradient(135deg,#27BF80,#168A5C)}
+  .num.orange{background:linear-gradient(135deg,#F4A35D,#D2792A)}
+  .num.pink{background:linear-gradient(135deg,#F06B9A,#D24A7C)}
+  .q{margin:2px 0 0}
+  .q .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block;margin-bottom:5px}
+  .q .t{font-size:clamp(17px,2.4vw,20px);font-weight:700;line-height:1.4;color:var(--ink)}
+  .ans{font-size:16.5px;line-height:1.82;color:var(--ink)}
+  .ans p{margin:0 0 14px}
+  .ans ul{margin:0 0 14px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .ans li{position:relative;padding-left:22px}
+  .ans li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55}
+  .hl{background-image:linear-gradient(180deg,transparent 56%,var(--m) 56%,var(--m) 92%,transparent 92%);
+    background-repeat:no-repeat;background-size:100% 100%;padding:.02em .14em;border-radius:.12em;font-weight:600;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;}
+  .hl.amber{--m:var(--m-amber)} .hl.blue{--m:var(--m-blue)} .hl.green{--m:var(--m-green)}
+  .hl.purple{--m:var(--m-purple)} .hl.orange{--m:var(--m-orange)} .hl.pink{--m:var(--m-pink)}
+  code,.mono{font-family:var(--mono);font-size:.88em}
+  .inline-code{background:var(--accent-soft);padding:.08em .38em;border-radius:6px;
+    font-family:var(--mono);font-size:.85em;color:var(--accent);white-space:nowrap;}
+  .roles{display:flex;flex-direction:column;gap:14px;margin:2px 0 4px}
+  .role{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start}
+  .rchip{font-family:var(--mono);font-size:13px;font-weight:700;text-align:center;padding:7px 4px;border-radius:9px;letter-spacing:.02em;}
+  .rchip.system{color:var(--chip-system);background:var(--chip-system-bg)}
+  .rchip.user{color:var(--chip-user);background:var(--chip-user-bg)}
+  .rchip.assistant{color:var(--chip-assistant);background:var(--chip-assistant-bg)}
+  .rchip.tool{color:var(--chip-tool);background:var(--chip-tool-bg)}
+  .rdesc{font-size:15.5px;line-height:1.7;padding-top:3px}
+  .rdesc .cost{display:block;margin-top:4px;font-size:13.5px;color:var(--muted)}
+  .codeblock{margin:4px 0 16px;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;overflow-x:auto;}
+  .codeblock pre{margin:0;padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.75;color:var(--ink);white-space:pre;}
+  .codeblock .cm{color:var(--faint)} .codeblock .kw{color:var(--chip-system)}
+  .codeblock .st{color:var(--chip-assistant)} .codeblock .fn{color:var(--chip-user)}
+  .keynote{display:flex;gap:12px;align-items:baseline;margin-top:6px;padding:13px 16px;border-radius:11px;
+    background:var(--accent-soft);border-left:4px solid var(--nc,var(--accent));font-size:15px;line-height:1.65;}
+  .keynote b{color:var(--nc,var(--accent));letter-spacing:.02em;flex:0 0 auto}
+  .card.c1 .keynote{--nc:#2A7FD4} .card.c2 .keynote{--nc:#6B4CD6} .card.c3 .keynote{--nc:#E89A1F}
+  .card.c4 .keynote{--nc:#1E9E6A} .card.c5 .keynote{--nc:#D2792A} .card.c6 .keynote{--nc:#D24A7C}
+  .tbl{width:100%;border-collapse:collapse;margin:4px 0 16px;font-size:14.5px}
+  .tbl th,.tbl td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  .tbl th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .tbl td .mono{color:var(--chip-user)}
+  footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--faint);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-family:var(--mono);letter-spacing:.02em;}
+  @media (max-width:520px){
+    .role{grid-template-columns:1fr;gap:6px} .rchip{justify-self:start;padding:5px 12px}
+    .keynote{align-items:flex-start;flex-direction:column;gap:4px}
+    .tbl{display:block;overflow-x:auto;white-space:nowrap}
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sheet">
+
+  <header>
+    <div>
+      <p class="eyebrow">算法刷题 · LeetCode 49 · Hot 100 哈希专题</p>
+      <h1>字母异位词分组：造签名，进哈希筐
+        <span class="sub">分组套路 = key 设计 + dict 装筐 · 遍历字典三姿势 · list() 内置函数 · 踩坑小卡片</span>
+      </h1>
+    </div>
+    <div class="stamp" aria-label="已完成">
+      <div class="tick">✓</div>
+      <div class="txt">已通关</div>
+      <div class="dt">2026·07·09</div>
+    </div>
+  </header>
+
+  <section class="card c1">
+    <div class="chead">
+      <div class="num blue">01</div>
+      <div class="q">
+        <span class="k">题意翻译</span>
+        <span class="t">异位词 = 同一把字母，打乱重排</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><span class="hl blue">字母异位词（anagram）</span>：两个词用的字母完全一样、只是顺序不同。<span class="inline-code">eat / tea / ate</span> 都是 a·e·t，互为异位词。</li>
+        <li>任务：把互为异位词的词分进同一组。<span class="inline-code">["eat","tea","tan","ate","nat","bat"]</span> → <span class="inline-code">[["eat","tea","ate"],["tan","nat"],["bat"]]</span>。</li>
+        <li>组内顺序、组间顺序都不作要求——就是<span class="hl blue">按"用了哪些字母"给单词分堆</span>。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>题面吓人的名词先翻译成人话：异位词分组 = <b>按字母构成分堆</b>。</span></div>
+    </div>
+  </section>
+
+  <section class="card c2">
+    <div class="chead">
+      <div class="num purple">02</div>
+      <div class="q">
+        <span class="k">核心套路</span>
+        <span class="t">分组问题 = 造签名 + 哈希表装筐</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>难点只有一个：<span class="hl purple">给异位词造一个"签名（key）"，让 eat/tea/ate 算出来一模一样</span>。</li>
+        <li>答案：把字母排序。<span class="inline-code">sorted("eat") → "aet"</span>，<span class="inline-code">sorted("tea") → "aet"</span>——排序把"顺序"这个差异抹掉，只剩"构成"。</li>
+        <li>然后一层循环：算签名 → 进对应的筐 → 最后交出所有筐。<span class="inline-code">sorted()</span> 返回列表，须 <span class="inline-code">"".join(...)</span> 拼回字符串——<span class="hl purple">列表不能当 dict 的 key，字符串可以</span>。</li>
+      </ul>
+      <div class="codeblock"><pre>groups = {}
+<span class="kw">for</span> word <span class="kw">in</span> strs:
+    key = <span class="st">""</span>.join(<span class="fn">sorted</span>(word))   <span class="cm"># 签名："eat"→"aet"</span>
+    <span class="kw">if</span> key <span class="kw">not in</span> groups:
+        groups[key] = []             <span class="cm"># 新签名 → 建空筐</span>
+    groups[key].append(word)         <span class="cm"># 统一塞筐，不写 else</span>
+<span class="kw">return</span> <span class="fn">list</span>(groups.values())</pre></div>
+      <div class="keynote"><b>套路</b><span><b>遇到分组类问题：给每个东西设计一个"归一化签名"，签名相同进同一筐，筐用 dict[key] → list 装。</b></span></div>
+    </div>
+  </section>
+
+  <section class="card c3">
+    <div class="chead">
+      <div class="num amber">03</div>
+      <div class="q">
+        <span class="k">dict 铁律</span>
+        <span class="t">一个 key 一个 value；想一对多，value 当筐</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>字典铁律：<span class="hl amber">key 不重复，一个 key 永远只挂一个 value</span>。不能往 "aet" 下塞三个独立的词。</li>
+        <li>诀窍：value 不是词，是<span class="hl amber">一个列表（筐）</span>。塞进字典的始终只有一个 value——一只筐；变多的是筐里的内容。</li>
+        <li>"筐里的词怎么区分？"——<b>不需要区分</b>。互为异位词本来就该混在一起，这正是分组的目的。dict 只负责"不同签名进不同筐"这一层。</li>
+      </ul>
+      <div class="codeblock"><pre>groups = {
+    <span class="st">"aet"</span>: [<span class="st">"eat"</span>, <span class="st">"tea"</span>, <span class="st">"ate"</span>],   <span class="cm"># 1 个 key → 1 个 value（装3个词的筐）</span>
+    <span class="st">"ant"</span>: [<span class="st">"tan"</span>, <span class="st">"nat"</span>],
+    <span class="st">"abt"</span>: [<span class="st">"bat"</span>],
+}</pre></div>
+      <div class="keynote"><b>口诀</b><span><b>dict[key] → list</b> 这个形状以后无处不在：按类别分组、按用户攒消息、图的邻接表——今天焊牢。</span></div>
+    </div>
+  </section>
+
+  <section class="card c4">
+    <div class="chead">
+      <div class="num green">04</div>
+      <div class="q">
+        <span class="k">血泪坑</span>
+        <span class="t">for x in 字典 拿到的是 key，不是 value</span>
+      </div>
+    </div>
+    <div class="ans">
+      <table class="tbl">
+        <tr><th>写法</th><th>遍历出什么</th></tr>
+        <tr><td><span class="mono">for k in groups:</span></td><td>key（签名）——本题的翻车点，交上去一堆 "aet"</td></tr>
+        <tr><td><span class="mono">for v in groups.values():</span></td><td>value（筐）——本题要的</td></tr>
+        <tr><td><span class="mono">for k, v in groups.items():</span></td><td>key 和 value 一起</td></tr>
+      </table>
+      <ul>
+        <li>同族坑：<span class="inline-code">for x in 列表</span> 得元素（整个词），<span class="inline-code">for x in 字符串</span> 得单个字符。<span class="hl green">遍历出什么，取决于容器是什么</span>——给 word 起名 ch，就是这个误会。</li>
+        <li>命名要如实：装着 <span class="inline-code">"eat"</span> 的变量叫 <span class="inline-code">ch</span>，三个月后的自己必懵。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>字典默认吐 key；<b>要值就明说 .values()，要俩就 .items()</b>。</span></div>
+    </div>
+  </section>
+
+  <section class="card c5">
+    <div class="chead">
+      <div class="num orange">05</div>
+      <div class="q">
+        <span class="k">list() 内置函数</span>
+        <span class="t">四行手工循环 = 一行 list(...)</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><span class="inline-code">list(x)</span>：把任何可遍历的东西<span class="hl orange">逐个倒进一个新列表</span>。判据：凡是能放进 <span class="inline-code">for</span> 的，都能喂给 <span class="inline-code">list()</span>。</li>
+        <li><span class="inline-code">groups.values()</span> 返回的是视图对象不是列表，<span class="inline-code">list()</span> 一包才是正经 <span class="inline-code">List[List[str]]</span>。"建空列表→遍历→逐个 append"那四行，就是 list() 的内部实现——<span class="hl orange">懂了原理之后，就该用一行的惯用写法</span>。</li>
+        <li>⚠️ <span class="hl orange">永远别拿内置名当变量名</span>：<span class="inline-code">for list in groups:</span> 会把 list() 函数盖掉，之后再调就炸 <span class="inline-code">'str' object is not callable</span>。同理躲开 dict、str、sum、max。</li>
+      </ul>
+      <div class="codeblock"><pre><span class="fn">list</span>(<span class="st">"abc"</span>)             <span class="cm"># ['a','b','c']</span>
+<span class="fn">list</span>(<span class="fn">range</span>(<span class="st">4</span>))          <span class="cm"># [0,1,2,3]</span>
+<span class="fn">list</span>(groups)             <span class="cm"># key 的列表(注意!)</span>
+<span class="fn">list</span>(groups.values())    <span class="cm"># 值的列表 ← 本题答案</span></pre></div>
+      <div class="keynote"><b>口诀</b><span>惯用写法（idiom）的价值是<b>让读者零思考</b>。会走了，就要走得漂亮。</span></div>
+    </div>
+  </section>
+
+  <section class="card c6">
+    <div class="chead">
+      <div class="num pink">06</div>
+      <div class="q">
+        <span class="k">Review 复盘</span>
+        <span class="t">这题被抓的四个毛病</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>🔴 <b>遍历字典拿了 key 当结果</b>：返回了签名 <span class="inline-code">["aet","ant","abt"]</span>，筐全扔了。→ <span class="inline-code">.values()</span>。</li>
+        <li>🔴 <b>拿 list 当循环变量</b>，内置函数被覆盖——这次没炸只是运气。</li>
+        <li>🟡 <b>if/else 两个分支都在 append</b>：建筐和塞词是两件事，建完筐统一塞，else 整个删掉。</li>
+        <li>🟡 <b>命名</b>：<span class="inline-code">full_List</span> 混大小写，Python 用 snake_case；<span class="inline-code">dist</span> 装的是分组不是距离，应叫 <span class="inline-code">groups</span>。</li>
+      </ul>
+      <div class="keynote"><b>心法</b><span>修 bug 的顺序：<b>先 🔴 致命再 🟡 风格</b>——但 🟡 不是永远不管，是排在后面，收完才算真收工。</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>LeetCode 49 · 字母异位词分组 · 哈希 · 签名分组法</span>
+    <span>算法 · 第 2 题 · PASS ✓</span>
+  </footer>
+
+</div>
+</div>
+</body>
+</html>
