@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeetCode 15 三数之和 · 算法小卡片</title>
+<style>
+  :root{
+    --paper:#F7F8FA; --card:#FFFFFF; --ink:#1E2330; --muted:#5B647A;
+    --faint:#8A93A6; --line:#E6E9F1; --accent:#33406B; --accent-soft:#EEF1F9;
+    --m-amber:#FFE08A; --m-blue:#A9D6FF; --m-green:#B2EEC6;
+    --m-purple:#DBC8FF; --m-orange:#FFC49B; --m-pink:#FFC2DB;
+    --chip-system:#7C5CE0; --chip-system-bg:#EFE9FF;
+    --chip-user:#2A7FD4; --chip-user-bg:#E3F1FF;
+    --chip-assistant:#1E9E6A; --chip-assistant-bg:#DCF6E9;
+    --chip-tool:#D2792A; --chip-tool-bg:#FCEBD8;
+    --stamp:#1E9E6A;
+    --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    --sans:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#131519; --card:#1C1F27; --ink:#E8EAF1; --muted:#9AA3B4;
+      --faint:#6E7688; --line:#2A2E39; --accent:#AEB9E6; --accent-soft:#242938;
+      --m-amber:rgba(255,206,84,.30); --m-blue:rgba(96,175,255,.30);
+      --m-green:rgba(70,214,150,.30); --m-purple:rgba(168,128,255,.32);
+      --m-orange:rgba(255,150,80,.30); --m-pink:rgba(255,120,180,.30);
+      --chip-system:#B79CFF; --chip-system-bg:#2C2544;
+      --chip-user:#79BAFF; --chip-user-bg:#1E2E44;
+      --chip-assistant:#57D69A; --chip-assistant-bg:#173229;
+      --chip-tool:#F0A85A; --chip-tool-bg:#33260F;
+      --stamp:#57D69A;
+    }
+  }
+  *{box-sizing:border-box} body{margin:0}
+  .wrap{font-family:var(--sans);background:var(--paper);color:var(--ink);
+    min-height:100vh;padding:clamp(20px,5vw,64px) clamp(16px,4vw,32px);line-height:1.5;}
+  .sheet{max-width:880px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
+    flex-wrap:wrap;border-bottom:2px solid var(--line);padding-bottom:26px;margin-bottom:38px;}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 12px;}
+  h1{font-size:clamp(26px,4.4vw,38px);line-height:1.2;margin:0;font-weight:800;letter-spacing:0;text-wrap:balance;color:var(--ink);}
+  h1 .sub{display:block;font-size:.52em;font-weight:600;color:var(--muted);margin-top:10px;letter-spacing:0}
+  .stamp{flex:0 0 auto;transform:rotate(-7deg);border:2.5px solid var(--stamp);border-radius:12px;
+    color:var(--stamp);padding:10px 16px 8px;text-align:center;background:color-mix(in srgb,var(--stamp) 8%,transparent);}
+  .stamp .tick{font-size:22px;line-height:1;font-weight:800}
+  .stamp .txt{font-size:15px;font-weight:800;letter-spacing:.14em;margin-top:4px}
+  .stamp .dt{font-size:10px;letter-spacing:.14em;margin-top:5px;font-family:var(--mono);opacity:.85}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:clamp(20px,3.5vw,32px);margin-bottom:26px;
+    box-shadow:0 1px 2px rgba(20,25,45,.04),0 8px 24px -18px rgba(20,25,45,.28);
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;}
+  .card:nth-of-type(1){animation-delay:.05s} .card:nth-of-type(2){animation-delay:.13s}
+  .card:nth-of-type(3){animation-delay:.21s} .card:nth-of-type(4){animation-delay:.29s}
+  .card:nth-of-type(5){animation-delay:.37s} .card:nth-of-type(6){animation-delay:.45s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .chead{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+  .num{flex:0 0 auto;width:44px;height:44px;border-radius:11px;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:17px;color:#fff;}
+  .num.blue{background:linear-gradient(135deg,#4A9BEC,#2A7FD4)}
+  .num.purple{background:linear-gradient(135deg,#8B6BE8,#6B4CD6)}
+  .num.amber{background:linear-gradient(135deg,#F5B93C,#E89A1F)}
+  .num.green{background:linear-gradient(135deg,#27BF80,#168A5C)}
+  .num.orange{background:linear-gradient(135deg,#F4A35D,#D2792A)}
+  .num.pink{background:linear-gradient(135deg,#F06B9A,#D24A7C)}
+  .q{margin:2px 0 0}
+  .q .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block;margin-bottom:5px}
+  .q .t{font-size:clamp(17px,2.4vw,20px);font-weight:700;line-height:1.4;color:var(--ink)}
+  .ans{font-size:16.5px;line-height:1.82;color:var(--ink)}
+  .ans p{margin:0 0 14px}
+  .ans ul{margin:0 0 14px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .ans li{position:relative;padding-left:22px}
+  .ans li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55}
+  .hl{background-image:linear-gradient(180deg,transparent 56%,var(--m) 56%,var(--m) 92%,transparent 92%);
+    background-repeat:no-repeat;background-size:100% 100%;padding:.02em .14em;border-radius:.12em;font-weight:600;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;}
+  .hl.amber{--m:var(--m-amber)} .hl.blue{--m:var(--m-blue)} .hl.green{--m:var(--m-green)}
+  .hl.purple{--m:var(--m-purple)} .hl.orange{--m:var(--m-orange)} .hl.pink{--m:var(--m-pink)}
+  code,.mono{font-family:var(--mono);font-size:.88em}
+  .inline-code{background:var(--accent-soft);padding:.08em .38em;border-radius:6px;
+    font-family:var(--mono);font-size:.85em;color:var(--accent);white-space:nowrap;}
+  .codeblock{margin:4px 0 16px;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;overflow-x:auto;}
+  .codeblock pre{margin:0;padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.75;color:var(--ink);white-space:pre;}
+  .codeblock .cm{color:var(--faint)} .codeblock .kw{color:var(--chip-system)}
+  .codeblock .st{color:var(--chip-assistant)} .codeblock .fn{color:var(--chip-user)}
+  .keynote{display:flex;gap:12px;align-items:baseline;margin-top:6px;padding:13px 16px;border-radius:11px;
+    background:var(--accent-soft);border-left:4px solid var(--nc,var(--accent));font-size:15px;line-height:1.65;}
+  .keynote b{color:var(--nc,var(--accent));letter-spacing:.02em;flex:0 0 auto}
+  .card.c1 .keynote{--nc:#2A7FD4} .card.c2 .keynote{--nc:#6B4CD6} .card.c3 .keynote{--nc:#E89A1F}
+  .card.c4 .keynote{--nc:#1E9E6A} .card.c5 .keynote{--nc:#D2792A} .card.c6 .keynote{--nc:#D24A7C}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 16px}
+  .pat{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--accent-soft)}
+  .pat h4{margin:0 0 8px;font-size:14px;color:var(--accent);font-family:var(--mono)}
+  .pat pre{margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.7;white-space:pre-wrap;color:var(--ink)}
+  footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--faint);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-family:var(--mono);letter-spacing:.02em;}
+  @media (max-width:520px){ .keynote{align-items:flex-start;flex-direction:column;gap:4px} .twocol{grid-template-columns:1fr} }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sheet">
+
+  <header>
+    <div>
+      <p class="eyebrow">算法刷题 · LeetCode 15 · Hot 100 双指针 · Hard 手感</p>
+      <h1>三数之和：kSum 降维 + 三处去重
+        <span class="sub">排序固定 k-2 个数 · 对撞双指针 · 守下标不守值真假 · 去重两套别混 · 守卫是检查点</span>
+      </h1>
+    </div>
+    <div class="stamp" aria-label="已完成">
+      <div class="tick">✓</div>
+      <div class="txt">已通关</div>
+      <div class="dt">2026·07·11</div>
+    </div>
+  </header>
+
+  <section class="card c1">
+    <div class="chead">
+      <div class="num blue">01</div>
+      <div class="q">
+        <span class="k">核心套路</span>
+        <span class="t">kSum 降维：排序 → 固定 k-2 个 → 剩 2 个对撞</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><span class="hl blue">kSum 通式:排序后固定 k-2 个数,把剩下 2 个交给对撞双指针</span>。2Sum 固定 0、3Sum 固定 1、4Sum 固定 2……一个模板吃一整类。</li>
+        <li>3Sum:固定 <span class="inline-code">nums[left]</span>,右边就退化成"有序数组找两数之和 = <span class="inline-code">-nums[left]</span>",正是 LC11 那种左右对撞。</li>
+        <li>为什么必须排序?因为你<span class="hl blue">按"和"找配对</span>——移动指针要让和单调变化,这只有有序才成立(对比 LC11 按"宽度"找,天生有序、不用排)。</li>
+      </ul>
+      <div class="keynote"><b>套路</b><span><b>kSum 降维:排序 + 固定 k-2 个 + 对撞双指针</b>。这条通式是这一整类题的万能钥匙。</span></div>
+    </div>
+  </section>
+
+  <section class="card c2">
+    <div class="chead">
+      <div class="num purple">02</div>
+      <div class="q">
+        <span class="k">主体骨架</span>
+        <span class="t">和大了收右，和小了收左，命中就记一笔</span>
+      </div>
+    </div>
+    <div class="ans">
+      <div class="codeblock"><pre>nums.sort()
+res = []
+<span class="kw">for</span> left <span class="kw">in</span> range(len(nums) - <span class="st">2</span>):
+    <span class="kw">if</span> left &gt; <span class="st">0</span> <span class="kw">and</span> nums[left] == nums[left - <span class="st">1</span>]:   <span class="cm"># 去重①:固定数</span>
+        <span class="kw">continue</span>
+    mid, right = left + <span class="st">1</span>, len(nums) - <span class="st">1</span>
+    <span class="kw">while</span> mid &lt; right:
+        s = nums[mid] + nums[right]
+        <span class="kw">if</span> s == -nums[left]:
+            res.append([nums[left], nums[mid], nums[right]])
+            mid += <span class="st">1</span>; right -= <span class="st">1</span>
+            <span class="kw">while</span> mid &lt; right <span class="kw">and</span> nums[mid] == nums[mid - <span class="st">1</span>]:   <span class="cm"># 去重②</span>
+                mid += <span class="st">1</span>
+            <span class="kw">while</span> mid &lt; right <span class="kw">and</span> nums[right] == nums[right + <span class="st">1</span>]: <span class="cm"># 去重③</span>
+                right -= <span class="st">1</span>
+        <span class="kw">elif</span> s &gt; -nums[left]:
+            right -= <span class="st">1</span>       <span class="cm"># 和太大,收右</span>
+        <span class="kw">else</span>:
+            mid += <span class="st">1</span>        <span class="cm"># 和太小,收左</span></pre></div>
+      <div class="keynote"><b>口诀</b><span>时间 O(n²)、空间 O(1)。排序的 O(n log n) 被 n² 吃掉,等于<b>免费</b>——所以这题排序稳赚。</span></div>
+    </div>
+  </section>
+
+  <section class="card c3">
+    <div class="chead">
+      <div class="num amber">03</div>
+      <div class="q">
+        <span class="k">血泪坑 · 守卫</span>
+        <span class="t">守卫判"下标范围"，绝不判"值真假"</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>3Sum 比 2Sum 难的唯一原因是<span class="hl amber">去重</span>——结果不能有重复三元组,三处都要跳:固定数、mid、right。</li>
+        <li>翻车写法:<span class="inline-code">if nums[left-1] and ...</span> 拿"值真假"当守卫。<span class="hl amber">一次炸三雷</span>:①没边界判断 → IndexError;②<span class="inline-code">0</span> 是假值 → 该去重的静默关掉([0,0,0,0] 出重复);③<span class="inline-code">left=0</span> 时 <span class="inline-code">nums[-1]</span> 绕回末尾。</li>
+        <li>正解:守卫一律判<span class="hl amber">下标范围</span>——<span class="inline-code">left &gt; 0</span>、<span class="inline-code">mid &lt; right</span>,不是 <span class="inline-code">nums[x]</span>。</li>
+      </ul>
+      <div class="keynote"><b>心法</b><span>去重/边界的守卫,判的永远是<b>"下标在不在范围内"</b>,不是"值真不真"。这是本题最贵的一课。</span></div>
+    </div>
+  </section>
+
+  <section class="card c4">
+    <div class="chead">
+      <div class="num green">04</div>
+      <div class="q">
+        <span class="k">去重两套写法</span>
+        <span class="t">各自自洽，绝不能一套取一半</span>
+      </div>
+    </div>
+    <div class="ans">
+      <div class="twocol">
+        <div class="pat"><h4>A 套 · 先前进再回头看</h4><pre>mid += 1
+while ... and \
+  nums[mid]==nums[mid-1]:
+    mid += 1
+# 比"身后刚用过的值"</pre></div>
+        <div class="pat"><h4>B 套 · 先向前看再前进</h4><pre>while ... and \
+  nums[mid+1]==nums[mid]:
+    mid += 1
+mid += 1
+# 比"身前下一个值"</pre></div>
+      </div>
+      <ul>
+        <li>两套都对,但<span class="hl green">混着用必崩</span>:曾把 A 的"先前进"配 B 的"看 nums[mid+1]",前进后却往身前看 → 查错参照物 → 没跳掉刚用过的值 → <span class="inline-code">[-2,0,0,2,2]</span> 吐重复。</li>
+        <li>病根:前进之后,要跳的是"跟刚用过的值相同"的元素,而它现在<span class="hl green">在你身后</span>(<span class="inline-code">nums[mid-1]</span>),不是身前。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>去重模板是<b>一个整体</b>:要么 A 套要么 B 套,别拆开重拼——参照物错一步,去重全废。</span></div>
+    </div>
+  </section>
+
+  <section class="card c5">
+    <div class="chead">
+      <div class="num orange">05</div>
+      <div class="q">
+        <span class="k">控制流真相</span>
+        <span class="t">守卫是"检查点"，不是"持续监控"</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>外层 <span class="inline-code">while mid &lt; right</span> <span class="hl orange">只在每轮开头查一次</span>,进了循环体就撒手。内层去重疯狂挪指针时,它全程不在场。</li>
+        <li>所以内层去重<b>必须自带 <span class="inline-code">mid &lt; right</span></b>。反例 <span class="inline-code">[0,0,0,0,0]</span>:不加内层守卫,right 从 4 一路减穿 mid、减到 0、再 <span class="inline-code">nums[-1]</span> 绕回 → 你担心的 "right-1=-1" 真的发生。</li>
+        <li>为什么加了就够?靠不变量 <span class="hl orange">mid ≥ 1</span>(因 <span class="inline-code">mid=left+1</span>):<span class="inline-code">mid&lt;right 且 mid≥1 ⇒ right≥2 ⇒ right-1≥1</span>,永远越不到 -1。</li>
+      </ul>
+      <div class="keynote"><b>心法</b><span>循环条件是<b>检查点式</b>的,不是持续监控。<b>哪个循环改指针,守卫就装在哪个循环头上</b>;边界安全要靠追不变量证明,别盲信。</span></div>
+    </div>
+  </section>
+
+  <section class="card c6">
+    <div class="chead">
+      <div class="num pink">06</div>
+      <div class="q">
+        <span class="k">复盘 + 好习惯</span>
+        <span class="t">一道 Hard 从 IndexError 调到干净 AC</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><b>别拿内置名当变量</b>:<span class="inline-code">list = []</span>(第 2 次,LC49 已点)会盖掉内置 <span class="inline-code">list()</span>。改 <span class="inline-code">res</span>。</li>
+        <li><b>三个边界追问值千金</b>:你连问"外层判了内层为啥还判""right-1 会不会 -1""mid&lt;right 够不够"——从"会写"到"吃透"就差这种较真。</li>
+        <li><b>抽象到通式</b>:你把套路总结成"固定 <span class="hl pink">k-2</span> 个数",不是"固定 1 个"——一句话吃下整个 kSum 家族,这才是套路的正确沉淀方式。</li>
+      </ul>
+      <div class="keynote"><b>套路沉淀</b><span><b>kSum 降维 = 排序 + 固定 k-2 个 + 对撞双指针;去重三处,守下标不守值真假。</b></span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>LeetCode 15 · 三数之和 · 排序+对撞双指针 · O(n²)/O(1)</span>
+    <span>算法 · 第 6 题 · PASS ✓</span>
+  </footer>
+
+</div>
+</div>
+</body>
+</html>
