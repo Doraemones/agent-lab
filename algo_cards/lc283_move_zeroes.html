@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeetCode 283 移动零 · 算法小卡片</title>
+<style>
+  :root{
+    --paper:#F7F8FA; --card:#FFFFFF; --ink:#1E2330; --muted:#5B647A;
+    --faint:#8A93A6; --line:#E6E9F1; --accent:#33406B; --accent-soft:#EEF1F9;
+    --m-amber:#FFE08A; --m-blue:#A9D6FF; --m-green:#B2EEC6;
+    --m-purple:#DBC8FF; --m-orange:#FFC49B; --m-pink:#FFC2DB;
+    --chip-system:#7C5CE0; --chip-system-bg:#EFE9FF;
+    --chip-user:#2A7FD4; --chip-user-bg:#E3F1FF;
+    --chip-assistant:#1E9E6A; --chip-assistant-bg:#DCF6E9;
+    --chip-tool:#D2792A; --chip-tool-bg:#FCEBD8;
+    --stamp:#1E9E6A;
+    --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    --sans:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#131519; --card:#1C1F27; --ink:#E8EAF1; --muted:#9AA3B4;
+      --faint:#6E7688; --line:#2A2E39; --accent:#AEB9E6; --accent-soft:#242938;
+      --m-amber:rgba(255,206,84,.30); --m-blue:rgba(96,175,255,.30);
+      --m-green:rgba(70,214,150,.30); --m-purple:rgba(168,128,255,.32);
+      --m-orange:rgba(255,150,80,.30); --m-pink:rgba(255,120,180,.30);
+      --chip-system:#B79CFF; --chip-system-bg:#2C2544;
+      --chip-user:#79BAFF; --chip-user-bg:#1E2E44;
+      --chip-assistant:#57D69A; --chip-assistant-bg:#173229;
+      --chip-tool:#F0A85A; --chip-tool-bg:#33260F;
+      --stamp:#57D69A;
+    }
+  }
+  *{box-sizing:border-box} body{margin:0}
+  .wrap{font-family:var(--sans);background:var(--paper);color:var(--ink);
+    min-height:100vh;padding:clamp(20px,5vw,64px) clamp(16px,4vw,32px);line-height:1.5;}
+  .sheet{max-width:880px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
+    flex-wrap:wrap;border-bottom:2px solid var(--line);padding-bottom:26px;margin-bottom:38px;}
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 12px;}
+  h1{font-size:clamp(26px,4.4vw,38px);line-height:1.2;margin:0;font-weight:800;letter-spacing:0;text-wrap:balance;color:var(--ink);}
+  h1 .sub{display:block;font-size:.52em;font-weight:600;color:var(--muted);margin-top:10px;letter-spacing:0}
+  .stamp{flex:0 0 auto;transform:rotate(-7deg);border:2.5px solid var(--stamp);border-radius:12px;
+    color:var(--stamp);padding:10px 16px 8px;text-align:center;background:color-mix(in srgb,var(--stamp) 8%,transparent);}
+  .stamp .tick{font-size:22px;line-height:1;font-weight:800}
+  .stamp .txt{font-size:15px;font-weight:800;letter-spacing:.14em;margin-top:4px}
+  .stamp .dt{font-size:10px;letter-spacing:.14em;margin-top:5px;font-family:var(--mono);opacity:.85}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:clamp(20px,3.5vw,32px);margin-bottom:26px;
+    box-shadow:0 1px 2px rgba(20,25,45,.04),0 8px 24px -18px rgba(20,25,45,.28);
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;}
+  .card:nth-of-type(1){animation-delay:.05s} .card:nth-of-type(2){animation-delay:.13s}
+  .card:nth-of-type(3){animation-delay:.21s} .card:nth-of-type(4){animation-delay:.29s}
+  .card:nth-of-type(5){animation-delay:.37s} .card:nth-of-type(6){animation-delay:.45s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .chead{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+  .num{flex:0 0 auto;width:44px;height:44px;border-radius:11px;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:17px;color:#fff;}
+  .num.blue{background:linear-gradient(135deg,#4A9BEC,#2A7FD4)}
+  .num.purple{background:linear-gradient(135deg,#8B6BE8,#6B4CD6)}
+  .num.amber{background:linear-gradient(135deg,#F5B93C,#E89A1F)}
+  .num.green{background:linear-gradient(135deg,#27BF80,#168A5C)}
+  .num.orange{background:linear-gradient(135deg,#F4A35D,#D2792A)}
+  .num.pink{background:linear-gradient(135deg,#F06B9A,#D24A7C)}
+  .q{margin:2px 0 0}
+  .q .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block;margin-bottom:5px}
+  .q .t{font-size:clamp(17px,2.4vw,20px);font-weight:700;line-height:1.4;color:var(--ink)}
+  .ans{font-size:16.5px;line-height:1.82;color:var(--ink)}
+  .ans p{margin:0 0 14px}
+  .ans ul{margin:0 0 14px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .ans li{position:relative;padding-left:22px}
+  .ans li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55}
+  .hl{background-image:linear-gradient(180deg,transparent 56%,var(--m) 56%,var(--m) 92%,transparent 92%);
+    background-repeat:no-repeat;background-size:100% 100%;padding:.02em .14em;border-radius:.12em;font-weight:600;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;}
+  .hl.amber{--m:var(--m-amber)} .hl.blue{--m:var(--m-blue)} .hl.green{--m:var(--m-green)}
+  .hl.purple{--m:var(--m-purple)} .hl.orange{--m:var(--m-orange)} .hl.pink{--m:var(--m-pink)}
+  code,.mono{font-family:var(--mono);font-size:.88em}
+  .inline-code{background:var(--accent-soft);padding:.08em .38em;border-radius:6px;
+    font-family:var(--mono);font-size:.85em;color:var(--accent);white-space:nowrap;}
+  .codeblock{margin:4px 0 16px;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;overflow-x:auto;}
+  .codeblock pre{margin:0;padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.75;color:var(--ink);white-space:pre;}
+  .codeblock .cm{color:var(--faint)} .codeblock .kw{color:var(--chip-system)}
+  .codeblock .st{color:var(--chip-assistant)} .codeblock .fn{color:var(--chip-user)}
+  .keynote{display:flex;gap:12px;align-items:baseline;margin-top:6px;padding:13px 16px;border-radius:11px;
+    background:var(--accent-soft);border-left:4px solid var(--nc,var(--accent));font-size:15px;line-height:1.65;}
+  .keynote b{color:var(--nc,var(--accent));letter-spacing:.02em;flex:0 0 auto}
+  .card.c1 .keynote{--nc:#2A7FD4} .card.c2 .keynote{--nc:#6B4CD6} .card.c3 .keynote{--nc:#E89A1F}
+  .card.c4 .keynote{--nc:#1E9E6A} .card.c5 .keynote{--nc:#D2792A} .card.c6 .keynote{--nc:#D24A7C}
+  .steps{display:flex;flex-direction:column;gap:8px;margin:4px 0 16px;font-family:var(--mono);font-size:13.5px}
+  .steprow{display:flex;gap:12px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:9px;background:var(--accent-soft)}
+  .steprow .lab{color:var(--accent);font-weight:700;flex:0 0 auto;min-width:118px}
+  .steprow .arr{color:var(--ink)}
+  footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--faint);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-family:var(--mono);letter-spacing:.02em;}
+  @media (max-width:520px){ .keynote{align-items:flex-start;flex-direction:column;gap:4px} }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sheet">
+
+  <header>
+    <div>
+      <p class="eyebrow">算法刷题 · LeetCode 283 · Hot 100 双指针</p>
+      <h1>移动零：读写双指针，把非零码到前面
+        <span class="sub">快慢/读写指针 · O(1) 空间原地重排 · 别删边算 · 签名即合同 · 踩坑小卡片</span>
+      </h1>
+    </div>
+    <div class="stamp" aria-label="已完成">
+      <div class="tick">✓</div>
+      <div class="txt">已通关</div>
+      <div class="dt">2026·07·11</div>
+    </div>
+  </header>
+
+  <section class="card c1">
+    <div class="chead">
+      <div class="num blue">01</div>
+      <div class="q">
+        <span class="k">视角转弯</span>
+        <span class="t">不是"移动 0"，是"把非零码齐，剩下自然是 0"</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li>要求:所有 0 挪到末尾、<span class="hl blue">非零相对顺序不变、且原地(不新建数组)</span>。</li>
+        <li>暴力直觉是"看到 0 就 del、末尾补 0"——但边遍历边删会<span class="inline-code">下标错位</span>,得靠 <span class="inline-code">i-=1</span> 打补丁,还得计数,而且 <span class="inline-code">del</span> 是 O(n) → 整体 O(n²)。这是要撞的墙。</li>
+        <li>换视角:<span class="hl blue">你不搬 0，你把非零往前码；码完，后面的位置天然就是 0 该在的地方</span>。难题即化——和 LC128"从起点码序列"同一种转弯。</li>
+      </ul>
+      <div class="keynote"><b>口诀</b><span>原地重排别想着"删"，想着"码"：<b>把要留的往前写，剩余位置统一收尾</b>。</span></div>
+    </div>
+  </section>
+
+  <section class="card c2">
+    <div class="chead">
+      <div class="num purple">02</div>
+      <div class="q">
+        <span class="k">读写双指针</span>
+        <span class="t">同一个数组，两个下标，O(1) 空间</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><span class="inline-code">read</span> 往前扫找非零;<span class="inline-code">write</span> 标记"下一个非零该落的位置"。<span class="hl purple">两个都是 nums 的下标，不是新数组</span>。</li>
+        <li>read 每遇一个非零 → 写到 <span class="inline-code">nums[write]</span> → write 前进一格。扫完,<span class="inline-code">write</span> 到末尾全填 0。</li>
+        <li>为什么原地覆盖不丢数据?铁律 <span class="hl purple">write ≤ read 恒成立</span>:你盖的位置永远是已读过的(要么早copy过的非零,要么乐意踩掉的0),绝不盖到没读的元素。</li>
+      </ul>
+      <div class="steps">
+        <div class="steprow"><span class="lab">nums=[0,1,0,3,12]</span><span class="arr">write=0</span></div>
+        <div class="steprow"><span class="lab">read→1 (非零)</span><span class="arr">nums[0]=1 → [1,1,0,3,12], write=1</span></div>
+        <div class="steprow"><span class="lab">read→3 (非零)</span><span class="arr">nums[1]=3 → [1,3,0,3,12], write=2</span></div>
+        <div class="steprow"><span class="lab">read→12 (非零)</span><span class="arr">nums[2]=12 → [1,3,12,3,12], write=3</span></div>
+        <div class="steprow"><span class="lab">填 0 (write→末尾)</span><span class="arr">[1,3,12,0,0] ✓</span></div>
+      </div>
+      <div class="codeblock"><pre>write = <span class="st">0</span>
+<span class="kw">for</span> read <span class="kw">in</span> range(len(nums)):   <span class="cm"># read 直接当循环变量,别再单独 i</span>
+    <span class="kw">if</span> nums[read] != <span class="st">0</span>:
+        nums[write] = nums[read]
+        write += <span class="st">1</span>
+<span class="kw">for</span> k <span class="kw">in</span> range(write, len(nums)):
+    nums[k] = <span class="st">0</span></pre></div>
+      <div class="keynote"><b>套路</b><span>"原地重排/搬移"类题 → <b>读写(快慢)双指针</b>:read 扫、write 收，同一数组两下标，O(1) 空间。</span></div>
+    </div>
+  </section>
+
+  <section class="card c3">
+    <div class="chead">
+      <div class="num amber">03</div>
+      <div class="q">
+        <span class="k">验收扣分</span>
+        <span class="t">AC 不等于干净：两处"没读合同"</span>
+      </div>
+    </div>
+    <div class="ans">
+      <ul>
+        <li><b>重复计数器</b>:同时写 <span class="inline-code">for i in range(...)</span> 又手动 <span class="inline-code">read += 1</span>,<span class="hl amber">read 永远等于 i，雇了两遍同一个人</span>。留一个:直接 <span class="inline-code">for read in range(...)</span>。</li>
+        <li><b>return 违约</b>:签名写 <span class="inline-code">-&gt; None</span>、题目大字"Do not return anything"，代码却 <span class="inline-code">return nums</span>。<span class="hl amber">LeetCode 不看返回值才蒙混 AC</span>，但 mypy 会报错、reviewer 会问。</li>
+        <li>教训:<span class="hl amber">函数签名 + 文档 = 合同，合同说啥照做</span>。这跟 LC7 漏看"32位约束"是同一种"没读清要求"的病。</li>
+      </ul>
+      <div class="keynote"><b>心法</b><span><b>AC 只证明"能跑"，不证明"干净"</b>。签名和 docstring 是白纸黑字的合同，别言行不一。</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>LeetCode 283 · 移动零 · 读写双指针 · O(n)/O(1)</span>
+    <span>算法 · 第 4 题 · PASS ✓</span>
+  </footer>
+
+</div>
+</div>
+</body>
+</html>
